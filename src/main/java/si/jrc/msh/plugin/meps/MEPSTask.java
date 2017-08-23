@@ -30,12 +30,12 @@ import javax.mail.MessagingException;
 import javax.naming.NamingException;
 import javax.xml.bind.JAXBException;
 import si.laurentius.commons.SEDJNDI;
-import si.laurentius.commons.SEDSystemProperties;
 import si.laurentius.commons.email.EmailAttachmentData;
 import si.laurentius.commons.email.EmailData;
 import si.laurentius.commons.email.EmailUtils;
 import si.laurentius.commons.enums.MimeValue;
 import si.laurentius.commons.enums.SEDInboxMailStatus;
+import si.laurentius.commons.enums.SEDMailPartSource;
 import si.laurentius.commons.exception.StorageException;
 import si.laurentius.commons.interfaces.SEDDaoInterface;
 
@@ -164,7 +164,7 @@ public class MEPSTask implements TaskExecutionInterface {
 
     // retrieve files
     MSHInMail miFilter = new MSHInMail();
-    String ebox = sedBox + "@" + SEDSystemProperties.getLocalDomain();
+    String ebox = sedBox;
     miFilter.setStatus(SEDInboxMailStatus.RECEIVED.getValue());
     miFilter.setService(service);
     miFilter.setAction("AddMail");
@@ -279,6 +279,11 @@ public class MEPSTask implements TaskExecutionInterface {
     File envData = null;
     File export = null;
     for (MSHInPart mp : mInMail.getMSHInPayload().getMSHInParts()) {
+      // ignore header
+      if (Objects.equals(mp.getSource(), SEDMailPartSource.EBMS.getValue())){
+        continue;
+      }
+      
       if (Objects.equals(MimeValue.MIME_XML.getMimeType(), mp.getMimeType())
               || Objects.equals(MimeValue.MIME_XML1.getMimeType(), mp.
                       getMimeType())) {

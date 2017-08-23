@@ -35,9 +35,11 @@ import si.jrc.msh.plugin.meps.pdf.PDFUtil;
 import si.laurentius.msh.inbox.mail.MSHInMail;
 import si.laurentius.commons.cxf.SoapUtils;
 import si.laurentius.commons.enums.MimeValue;
+import si.laurentius.commons.enums.SEDMailPartSource;
 import si.laurentius.commons.exception.StorageException;
 import si.laurentius.commons.utils.SEDLogger;
 import si.laurentius.commons.utils.StorageUtils;
+import si.laurentius.commons.utils.Utils;
 import si.laurentius.msh.inbox.payload.MSHInPart;
 import si.laurentius.plugin.interceptor.MailInterceptorDef;
 import si.laurentius.plugin.interfaces.SoapInterceptorInterface;
@@ -110,6 +112,9 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
     List<File> contentList = new ArrayList<>();
 
     for (MSHInPart mp : mInMail.getMSHInPayload().getMSHInParts()) {
+      if (!mp.getSource().equals(SEDMailPartSource.MAIL.getValue())){
+        continue;
+      }
       if (Objects.equals(MimeValue.MIME_XML.getMimeType(), mp.getMimeType())
               || Objects.equals(MimeValue.MIME_XML1.getMimeType(), mp.
                       getMimeType())) {
@@ -135,6 +140,7 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
       File f = storageUtils.storeInFile(MimeValue.MIME_PDF.getMimeType(), new File(pd.getTempFileName()));
       
       MSHInPart mp = new MSHInPart();
+      mp.setEbmsId(Utils.getUUIDWithLocalDomain());
       mp.setDescription("Concenated PDF");
       mp.setFilename("concenated.pdf");
       mp.setName("concenated");
@@ -142,6 +148,9 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
       mp.setSource("MEPS");
       mp.setMimeType(MimeValue.MIME_PDF.getMimeType());
       mInMail.getMSHInPayload().getMSHInParts().add(mp);
+      
+      
+      
     } catch (PDFException ex) {
       throw new MEPSFault(MEPSFaultCode.Other,null,
                 "Process exception: " + ex.getMessage(), ex,

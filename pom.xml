@@ -5,7 +5,7 @@
 
     <groupId>si.laurentius.plugin.meps</groupId>
     <artifactId>Laurentius-meps-plugin</artifactId>
-    <version>1.1</version>
+    <version>2.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Laurentius-meps-plugin</name>
@@ -43,12 +43,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <war.final.name>plugin-meps</war.final.name>
         <laurentius.groupId>si.vsrs.cif.sed</laurentius.groupId>
-        <laurentius.version>1.1</laurentius.version>
+        <laurentius.version>2.0-SNAPSHOT</laurentius.version>
 		
         <!-- DEPENDENCIES -->
         <javax.javaee-api.version>7.0</javax.javaee-api.version>
         <log4j.version>1.2.17</log4j.version>
-        <cxf-rt.version>3.1.4</cxf-rt.version>
+        <cxf-rt.version>3.1.4</cxf-rt.version>          
         <org.primefaces.version>6.0</org.primefaces.version>
         <junit.version>4.12</junit.version>
         <itext.version>2.1.7</itext.version>
@@ -184,7 +184,7 @@
                         <manifestEntries>                            
                             <implementation-version>${laurentius.version}</implementation-version>             
                             <Implementation-Build>${buildNumber}</Implementation-Build>                            
-                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,si.laurentius</Dependencies>
+                            <Dependencies>org.apache.cxf,org.apache.cxf.impl,si.laurentius, org.primefaces</Dependencies>
                         </manifestEntries>
                     </archive>                                 
                 </configuration>                 
