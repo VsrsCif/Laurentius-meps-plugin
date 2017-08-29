@@ -50,17 +50,17 @@ import si.laurentius.user.SEDUser;
 @SessionScoped
 @ManagedBean(name = "MEPSPluginData")
 public class MEPSPluginData {
-  
-   private static final SEDLogger LOG = new SEDLogger(MEPSPluginData.class);
 
-   @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
+  private static final SEDLogger LOG = new SEDLogger(MEPSPluginData.class);
+
+  @EJB(mappedName = SEDJNDI.JNDI_SEDLOOKUPS)
   SEDLookupsInterface mDBLookUp;
 
   @Resource
   WebServiceContext context;
-  
-  String currentPanel  =AppConstant.S_PANEL_TEST;
-  boolean showNavigator  =true;
+
+  String currentPanel = AppConstant.S_PANEL_TEST;
+  boolean showNavigator = true;
 
   /**
    *
@@ -86,7 +86,8 @@ public class MEPSPluginData {
     String strBuildVer = "";
     Manifest p;
     File manifestFile = null;
-    String home = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
+    String home = FacesContext.getCurrentInstance().getExternalContext().
+            getRealPath("/");
     manifestFile = new File(home, "META-INF/MANIFEST.MF");
     try (FileInputStream fis = new FileInputStream(manifestFile)) {
       p = new Manifest();
@@ -163,10 +164,9 @@ public class MEPSPluginData {
 
   }
 
-
   /**
-     *
-     */
+   *
+   */
   public void refreshMainPanel() {
     FacesContext facesContext = facesContext();
     String refreshpage = "MainPanel";
@@ -176,7 +176,7 @@ public class MEPSPluginData {
     facesContext.setViewRoot(viewroot);
   }
 
-   /**
+  /**
    *
    * @param event
    */
@@ -203,7 +203,7 @@ public class MEPSPluginData {
     this.showNavigator = showNavigator;
   }
 
-   public SEDUser getUser() {
+  public SEDUser getUser() {
     long l = LOG.logStart();
 
     ExternalContext externalContext = facesContext().getExternalContext();

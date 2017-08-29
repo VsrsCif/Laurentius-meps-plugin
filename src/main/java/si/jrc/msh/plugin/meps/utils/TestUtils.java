@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import static si.jrc.msh.plugin.meps.ejb.MEPSDataBean.BLOB_FOLDER;
+import static si.jrc.msh.plugin.meps.AppConstant.BLOB_FOLDER;
 import si.laurentius.commons.enums.MimeValue;
 import si.laurentius.commons.SEDSystemProperties;
 import si.laurentius.commons.exception.StorageException;

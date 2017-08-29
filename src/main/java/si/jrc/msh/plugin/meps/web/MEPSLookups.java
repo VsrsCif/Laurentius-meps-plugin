@@ -14,27 +14,18 @@
  */
 package si.jrc.msh.plugin.meps.web;
 
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import si.jrc.msh.plugin.meps.ejb.MEPSDataInterface;
-import si.laurentius.commons.SEDGUIConstants;
-import si.laurentius.commons.SEDJNDI;
 import si.laurentius.commons.SEDSystemProperties;
-import si.laurentius.commons.interfaces.SEDLookupsInterface;
 import si.laurentius.commons.utils.SEDLogger;
-import si.laurentius.plugin.meps.MEPSData;
 import si.laurentius.plugin.meps.PartyType;
 import si.laurentius.plugin.meps.PhysicalAddressType;
 import si.laurentius.plugin.meps.ServiceType;
-import si.laurentius.user.SEDUser;
 
 /**
  *

@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -29,6 +31,8 @@ import javax.ejb.Stateless;
 import javax.mail.MessagingException;
 import javax.naming.NamingException;
 import javax.xml.bind.JAXBException;
+import si.jrc.msh.plugin.meps.exception.MEPSException;
+import si.jrc.msh.plugin.meps.utils.PackageNumberGenerator;
 import si.laurentius.commons.SEDJNDI;
 import si.laurentius.commons.email.EmailAttachmentData;
 import si.laurentius.commons.email.EmailData;
@@ -78,6 +82,9 @@ public class MEPSTask implements TaskExecutionInterface {
   public static final String KEY_MAIL_CONFIG_JNDI = "mail.config.jndi";
 
   private static final SEDLogger LOG = new SEDLogger(MEPSTask.class);
+  public static String DATE_FORMAT = "%04d%02d%02d";
+  public static String DATETIME_FORMAT = "%04d%02d%02d_%02d02d";
+
   @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
   SEDDaoInterface mDB;
 
@@ -155,9 +162,31 @@ public class MEPSTask implements TaskExecutionInterface {
       smtpConf = "java:jboss/mail/Default";
     }
 
+    int iPackageNumber;
+    try {
+      iPackageNumber = PackageNumberGenerator.getInstance().getNextValue();
+    } catch (MEPSException ex) {
+      String msg = String.format(
+              "Error occured while generating task number: %s", ex.getMessage());
+      LOG.logError(msg, ex);
+      throw new TaskException(TaskException.TaskExceptionCode.InitException,
+              msg);
+    }
+
     // ---------------------------
     // init
-    File rootFolder = new File(StringFormater.replaceProperties(outFolder));
+    Calendar cal = Calendar.getInstance();
+    MepsFolderProperties mp = new MepsFolderProperties();
+    mp.setNumber(iPackageNumber + "");
+    
+    mp.setDate(String.format(DATE_FORMAT, cal.get(Calendar.YEAR), 
+            cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
+    
+    mp.setDateTime(String.format(DATETIME_FORMAT, cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+             cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)) );
+
+    File rootFolder = new File(StringFormater.format(outFolder, mp));
     if (!rootFolder.exists()) {
       rootFolder.mkdirs();
     }
@@ -170,9 +199,8 @@ public class MEPSTask implements TaskExecutionInterface {
     miFilter.setAction("AddMail");
     miFilter.setSenderEBox(ebox);
 
-    LOG.
-            formatedDebug("Get mail to export for service: %s, receiver %s",
-                    service, ebox);
+    LOG.formatedDebug("Get mail to export for service: %s, receiver %s",
+            service, ebox);
 
     List<MSHInMail> lst = mDB.
             getDataList(MSHInMail.class, -1, maxMailProc, "Id", "ASC", miFilter);
@@ -185,8 +213,8 @@ public class MEPSTask implements TaskExecutionInterface {
       // lock mail
       lst.stream().forEach((m) -> {
         try {
-          mDB.setStatusToInMail(m, SEDInboxMailStatus.PROCESS,
-                  "Add message to zpp deliver proccess");
+          mDB.setStatusToInMail(m, SEDInboxMailStatus.PLOCKED,
+                  "Mail  exported in package");
         } catch (StorageException ex) {
           String msg = String.format(
                   "Error occurred processing mail: '%s'. Err: %s.", m.getId(),
@@ -196,7 +224,8 @@ public class MEPSTask implements TaskExecutionInterface {
         }
       });
 
-      File metadata = new File(rootFolder, "metadata.txt");
+      File metadata = new File(rootFolder, String.format("metadata_%05d.txt",
+              iPackageNumber));
       FileWriter mailData = null;
       try {
         mailData = new FileWriter(metadata);
@@ -221,8 +250,8 @@ public class MEPSTask implements TaskExecutionInterface {
 
       lst.stream().forEach((m) -> {
         try {
-          mDB.setStatusToInMail(m, SEDInboxMailStatus.DELIVERED,
-                  "Add message to zpp deliver proccess");
+          mDB.setStatusToInMail(m, SEDInboxMailStatus.PREADY,
+                  "");
         } catch (StorageException ex) {
           String msg = String.format(
                   "Error occurred processing mail: '%s'. Err: %s.", m.getId(),
@@ -280,10 +309,10 @@ public class MEPSTask implements TaskExecutionInterface {
     File export = null;
     for (MSHInPart mp : mInMail.getMSHInPayload().getMSHInParts()) {
       // ignore header
-      if (Objects.equals(mp.getSource(), SEDMailPartSource.EBMS.getValue())){
+      if (Objects.equals(mp.getSource(), SEDMailPartSource.EBMS.getValue())) {
         continue;
       }
-      
+
       if (Objects.equals(MimeValue.MIME_XML.getMimeType(), mp.getMimeType())
               || Objects.equals(MimeValue.MIME_XML1.getMimeType(), mp.
                       getMimeType())) {
@@ -455,7 +484,7 @@ public class MEPSTask implements TaskExecutionInterface {
     tt.getCronTaskPropertyDeves().add(
             createTTProperty(KEY_FOLDER, "Export folder", true,
                     PropertyType.String.getType(), null, null,
-                    "${laurentius.home}/meps-archive/"));
+                    "${laurentius.home}/meps-archive/${Date}_${Number}"));
 
     tt.getCronTaskPropertyDeves().add(
             createTTProperty(KEY_SENDER_SEDBOX, "Sender box", true,

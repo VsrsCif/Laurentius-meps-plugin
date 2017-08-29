@@ -25,6 +25,12 @@ public class AppConstant {
   public static final String PLUGIN_NAME = "MEPS";
   
   
+  public static final String ROOT_FOLDER = "/meps/";
+  public static final String BLOB_FOLDER = ROOT_FOLDER + "/test-pdf/";
+  public static final String FILE_INIT_DATA = "meps-data.xml";
+  public static final String FILE_PACKAGE_NUMBER = "last_package_number.txt";
+  
+  
 
   public String getS_PANEL_TEST() {
     return S_PANEL_TEST;

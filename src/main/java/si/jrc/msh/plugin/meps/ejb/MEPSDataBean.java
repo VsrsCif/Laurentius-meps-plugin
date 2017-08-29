@@ -25,6 +25,8 @@ import javax.ejb.Local;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.xml.bind.JAXBException;
+import static si.jrc.msh.plugin.meps.AppConstant.FILE_INIT_DATA;
+import static si.jrc.msh.plugin.meps.AppConstant.ROOT_FOLDER;
 import si.laurentius.commons.SEDSystemProperties;
 import si.laurentius.commons.utils.SEDLogger;
 import si.laurentius.commons.utils.xml.XMLUtils;
@@ -41,9 +43,7 @@ import si.laurentius.plugin.meps.ServiceType;
 @Local(MEPSDataInterface.class)
 public class MEPSDataBean implements MEPSDataInterface {
 
-  public static final String FILE_INIT_DATA = "meps-data.xml";
-  public static final String ROOT_FOLDER = "/meps/";
-  public static final String BLOB_FOLDER = ROOT_FOLDER + "/test-pdf/";
+
 
   private static final SEDLogger LOG = new SEDLogger(MEPSDataBean.class);
   MEPSData mepsData = null;
