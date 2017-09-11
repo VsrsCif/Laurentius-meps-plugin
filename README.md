@@ -8,7 +8,7 @@ Service provider (at least once a day) print and envelope all received requests.
 Enveloped mail is than submitted to local post for delivery and status report is 
 submitted to service requester all requests (PROCESSED, DELETED). 
 
-![MEPS service sequence diagram](https://github.com/VsrsCif/Laurentius-meps-plugin/docs/images/meps-actions.png)
+![MEPS service sequence diagram](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/images/meps-actions.png)
 
 
 ###Client (service requester)
@@ -30,8 +30,8 @@ MEPS Service type correspond to mail envelope type and postal delivery service.
 
 
 
-| Service type  | description | envelope exampe
-| ------------- | ------------- |
+| Service type  | description | envelope exampe |
+| ------------- | ------------- | ------------- |
 | PrintAndEnvelope-C5      | Ordinal mail with C5 envelope (1g - 2kg)|   |
 | PrintAndEnvelope-C5-R    | Registred mail with: C5 envelope (1g - 2kg) |  |
 | PrintAndEnvelope-C5-AD   | Registred  mail with AdviceOfDelivery  (1g - 2kg) | |
@@ -39,9 +39,9 @@ MEPS Service type correspond to mail envelope type and postal delivery service.
 | PrintAndEnvelope-Package_R | Registred package  (2kg - 30kg) | |
 | PrintAndEnvelope-Package_AD| Registred package with AdviceOfDelivery  (2kg - 30kg) | |
 
-| PrintAndEnvelope-LegalZPP  | Legal service in civil procedures - personal (1g - 2kg)| [ZPP envelope (personal)](https://github.com/VsrsCif/Laurentius-meps-plugin/docs/ZPP_osebno.pdf | 
-| PrintAndEnvelope-LegalZPP_NP | Legal service in civil procedures  (1g - 2kg)|   [ZPP envelope ](https://github.com/VsrsCif/Laurentius-meps-plugin/docs/ZPP_navadno.pdf |
-| PrintAndEnvelope-LegalZUP |  Legal service in administrative procedures (1g - 2kg)|   [ZUP envelope ](https://github.com/VsrsCif/Laurentius-meps-plugin/docs/ZUP.pdf |
+| PrintAndEnvelope-LegalZPP  | Legal service in civil procedures - personal (1g - 2kg) | [ZPP envelope (personal)](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_osebno.pdf) | 
+| PrintAndEnvelope-LegalZPP_NP | Legal service in civil procedures  (1g - 2kg)|   [ZPP envelope ]( https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_navadno.pdf) |
+| PrintAndEnvelope-LegalZUP |  Legal service in administrative procedures (1g - 2kg)|   [ZUP envelope ](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZUP.pdf) |
 
 
 ### Prerequisites
