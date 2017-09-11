@@ -17,6 +17,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.xml.bind.JAXBException;
 import si.jrc.msh.plugin.meps.AppConstant;
+import si.jrc.msh.plugin.meps.enums.MEPSService;
 import si.jrc.msh.plugin.meps.utils.TestUtils;
 import si.jrc.msh.plugin.meps.web.dlg.DialogProgress;
 
@@ -26,7 +27,7 @@ import si.laurentius.commons.interfaces.SEDDaoInterface;
 import si.laurentius.commons.utils.SEDLogger;
 import si.laurentius.commons.utils.Utils;
 import si.laurentius.msh.outbox.mail.MSHOutMail;
-import si.laurentius.plugin.meps.ServiceType;
+
 
 /**
  *
@@ -104,29 +105,22 @@ public class MEPSTestAbstract {
   public void setTestSubject(String testSubject) {
     this.testSubject = testSubject;
   }
-  
-  public ServiceType getServiceType(String name){
-    return getPluginLookups().getServiceByName(name);
-    
-  }
 
  
 
   public void createOutMail(int indx,
           String sndBox,
           String rcBox,
-          String service,
+          MEPSService service,
           String action,
-          ServiceType st,
           String userName) throws StorageException, JAXBException {
 
     MSHOutMail mom = mtUtils.createOutMail(indx,
           sndBox,
           rcBox,
           service,
-          action,
-          st);
-    mDB.serializeOutMail(mom, userName, AppConstant.PLUGIN_NAME, "");
+          action);
+    mDB.serializeOutMail(mom, userName, AppConstant.PLUGIN_TYPE, "");
 
     
   }

@@ -28,6 +28,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import static si.jrc.msh.plugin.meps.AppConstant.BLOB_FOLDER;
+import si.jrc.msh.plugin.meps.enums.MEPSService;
 import si.laurentius.commons.enums.MimeValue;
 import si.laurentius.commons.SEDSystemProperties;
 import si.laurentius.commons.exception.StorageException;
@@ -43,8 +44,6 @@ import si.laurentius.msh.outbox.mail.MSHOutMail;
 import si.laurentius.msh.outbox.payload.MSHOutPart;
 import si.laurentius.msh.outbox.payload.MSHOutPayload;
 import si.laurentius.msh.outbox.property.MSHOutProperties;
-import si.laurentius.plugin.meps.ServiceType;
-
 /**
  *
  * @author Jože Rihtaršič
@@ -90,9 +89,8 @@ public class TestUtils {
           int indx,
           String sndBox,
           String rcBox,
-          String service,
-          String action,
-          ServiceType st) throws JAXBException, StorageException {
+         MEPSService ms,
+          String action) throws JAXBException, StorageException {
     Random rnd = new Random(Calendar.getInstance().getTimeInMillis());
     long l = LOG.logStart();
 
@@ -104,11 +102,13 @@ public class TestUtils {
     List<File> fls = getRandomFiles(1, 5, rnd);
 
     MSHOutMail om = new MSHOutMail();
+    
+   
 
     om.setSenderMessageId("SM_ID-" + UUID.randomUUID().toString());
     om.setSubmittedDate(Calendar.getInstance().getTime());
     om.setAction(action);
-    om.setService(service);
+    om.setService(ms.getService());
     om.setReceiverName(senderAddress[0]);
     om.setReceiverEBox(rcBox);
     om.setSenderName(receiverAddress[0]);
@@ -118,7 +118,7 @@ public class TestUtils {
 
     om.setMSHOutPayload(new MSHOutPayload());
     
-    addEnvelopeData(indx, om, senderAddress, senderAddress, st);
+    addEnvelopeData(indx, om, senderAddress, senderAddress, ms);
 
     int i = 0;
     for (File f : fls) {
@@ -143,7 +143,7 @@ public class TestUtils {
   }
 
   public void addEnvelopeData(int indx, MSHOutMail mo, String[] sa, String[] ra,
-          ServiceType st) throws JAXBException, StorageException {
+          MEPSService st) throws JAXBException, StorageException {
     EnvelopeData envelopeData = new EnvelopeData();
     envelopeData.setExecutorContractId("SP1");
     envelopeData.setExecutorId("ServiceProvider MEPS");
@@ -151,18 +151,22 @@ public class TestUtils {
     envelopeData.setSenderMailData(new SenderMailData());
     
     envelopeData.getSenderMailData().setContentDescription(mo.getSubject());
-    envelopeData.getSenderMailData().setCaseCode(String.format("VL %d/2017", indx));
+    envelopeData.getSenderMailData().setCaseType("VL");
+    envelopeData.getSenderMailData().setCaseNumber(String.format("%d/2017", indx));
+    envelopeData.getSenderMailData().setMailId(String.format("%08d", indx));
+    
     
     
 
-    envelopeData.getPostalData().setMepsService(st.getName());
+    envelopeData.getPostalData().setMepsService(st.getService());
+    
     envelopeData.getPostalData().setEnvelopeType(st.getEnvelopeName());
-    if (st.isUseUPN()) {
+    if (st.hasUPNCode()) {
       int irNumb = nextRNumber();
       int iCN = calculateControlNumber(irNumb);
       envelopeData.getPostalData().setUPNCode(new PostalData.UPNCode());
-      envelopeData.getPostalData().getUPNCode().setPrefix(st.getUPNPrefix());
-      envelopeData.getPostalData().getUPNCode().setCode(irNumb);
+      envelopeData.getPostalData().getUPNCode().setPrefix("RR");
+      envelopeData.getPostalData().getUPNCode().setNumber(irNumb);
       envelopeData.getPostalData().getUPNCode().setControl(iCN);
       envelopeData.getPostalData().getUPNCode().setSuffix("SI");
     }

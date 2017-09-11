@@ -5,19 +5,16 @@
  */
 package si.jrc.msh.plugin.meps.web;
 
-import java.io.File;
-import java.util.List;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXBException;
+import si.jrc.msh.plugin.meps.enums.MEPSAction;
+import si.jrc.msh.plugin.meps.enums.MEPSService;
 import si.jrc.msh.plugin.meps.web.dlg.ProcessAbstract;
 import si.laurentius.commons.exception.StorageException;
 import si.laurentius.commons.utils.SEDLogger;
 import si.laurentius.commons.utils.Utils;
-import si.laurentius.plugin.meps.ServiceType;
 
 public class ProcessPackageCase extends ProcessAbstract {
 
@@ -72,11 +69,10 @@ public class ProcessPackageCase extends ProcessAbstract {
     String senderBox = getTestSenderEBox();
     String receiverBox = getTestReceiverEBox();
     String service = getTestService();
-    String action = "AddMail";
-    ServiceType st = tcMailData.getServiceType(service);
-   // String subject = tcMailData.getTestSubject();
-   // String userName = tcMailData.getUserName();
-
+    String action = MEPSAction.ADD_MAIL.getValue();
+    
+    MEPSService ms = MEPSService.getValueByService(service);
+    
      String subject = "test ";
     String userName = " test ";
    
@@ -108,7 +104,7 @@ public class ProcessPackageCase extends ProcessAbstract {
                   i, senderBox, receiverBox, icnt);
           
           tcMailData.createOutMail(i, senderBox, receiverBox,
-                   service, action, st,
+                   ms, action,
                   userName);
 
           setProgress(i * 98 / icnt + 2);

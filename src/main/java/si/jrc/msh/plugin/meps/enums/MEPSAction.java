@@ -9,14 +9,14 @@ package si.jrc.msh.plugin.meps.enums;
  *
  * @author sluzba
  */
-public enum MEPSActions {
+public enum MEPSAction {
   ADD_MAIL("AddMail"),
   REMOVE_MAIL("RemoveMail"),
   SERVICE_STATUS_NOTIFICATION("ServiceStatusNotification");
   
   
   String value;
-  private MEPSActions(String act){
+  private MEPSAction(String act){
     value = act;
   }
 

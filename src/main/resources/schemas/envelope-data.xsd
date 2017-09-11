@@ -28,34 +28,34 @@ Copyright 2015, Supreme Court Republic of Slovenia
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://meps.laurentius.si/envelope" targetNamespace="http://meps.laurentius.si/envelope" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="EnvelopeData" type="ns1:EnvelopeData"/>
 	<xs:complexType name="PhysicalAddressType">
-		<xs:attribute name="Name" type="xs:string" use="required">
+		<xs:attribute name="name" type="ns1:non-empty-string" use="required">
 			<xs:annotation>
 				<xs:documentation>Name or Firstname and Surname</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="Name2" type="xs:string">
+		<xs:attribute name="name2" type="xs:string">
 			<xs:annotation>
 				<xs:documentation>Department name</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="Address" type="xs:string" use="required">
+		<xs:attribute name="address" type="ns1:non-empty-string" use="required">
 			<xs:annotation>
 				<xs:documentation>Street name and house name or Postal box id</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="PostalCode" type="xs:token" use="required">
+		<xs:attribute name="postalCode" type="ns1:non-empty-string" use="required">
 			<xs:annotation>
 				<xs:documentation>Postal code</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="PostalName" type="xs:string" use="required">
+		<xs:attribute name="postalName" type="ns1:non-empty-string" use="required">
 			<xs:annotation>
 				<xs:documentation>Postal name </xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="Town" type="xs:string" use="required"/>
-		<xs:attribute name="Country" type="xs:string" use="required"/>
-		<xs:attribute name="CountryCode" type="xs:token" use="required"/>
+		<xs:attribute name="town" type="ns1:non-empty-string" use="required"/>
+		<xs:attribute name="country" type="xs:string"/>
+		<xs:attribute name="countryCode" type="xs:token"/>
 	</xs:complexType>
 	<xs:complexType name="EnvelopeData">
 		<xs:annotation>
@@ -70,21 +70,37 @@ Copyright 2015, Supreme Court Republic of Slovenia
 			<xs:element name="SenderAddress" type="ns1:PhysicalAddressType"/>
 			<xs:element name="PostalData" type="ns1:PostalData"/>
 			<xs:element name="SenderMailData" type="ns1:SenderMailData"/>
-			<xs:element name="PrintContent" type="ns1:PrintContent" maxOccurs="unbounded"/>
+			<xs:element name="PrintContent" type="ns1:PrintContent" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="SenderMailData">
-		<xs:sequence>
-			<xs:element name="ContentDescription" type="xs:string"/>
-			<xs:element name="CaseCode" type="xs:string"/>
-			<xs:element name="SenderMailId" type="xs:token"/>
-			<xs:element name="SenderMailCode" type="xs:string"/>
-			<xs:element name="Calendar" type="xs:date" minOccurs="0"/>
-		</xs:sequence>
+		<xs:attribute name="mailId" use="required">
+			<xs:simpleType>
+				<xs:restriction base="ns1:non-empty-string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="caseType">
+			<xs:simpleType>
+				<xs:restriction base="ns1:non-empty-string"/>
+			</xs:simpleType>
+		</xs:attribute>
+                <xs:attribute name="caseNumber">
+			<xs:simpleType>
+				<xs:restriction base="ns1:non-empty-string"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="calendar" type="xs:date"/>
+		<xs:attribute name="contentDescription" use="required">
+			<xs:simpleType>
+				<xs:restriction base="ns1:non-empty-string">
+					<xs:maxLength value="150"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="PostalData">
 		<xs:sequence>
-			<xs:element name="UPNCode"  >
+			<xs:element name="UPNCode" minOccurs="0">
 				<xs:complexType>
 					<xs:attribute name="prefix" use="required">
 						<xs:simpleType>
@@ -93,7 +109,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>
-					<xs:attribute name="code" type="xs:int" use="required"/>
+					<xs:attribute name="number" type="xs:int" use="required"/>
 					<xs:attribute name="control" use="required">
 						<xs:simpleType>
 							<xs:restriction base="xs:int">
@@ -106,7 +122,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
-                <xs:attribute name="mepsService" type="xs:token" use="required"/>
+		<xs:attribute name="mepsService" type="xs:token" use="required"/>
 		<xs:attribute name="envelopeType" type="xs:token" use="required"/>
 		<xs:attribute name="submitPostalCode" type="xs:token" use="required"/>
 		<xs:attribute name="submitPostalName" type="xs:string" use="required"/>
@@ -114,10 +130,14 @@ Copyright 2015, Supreme Court Republic of Slovenia
 		<xs:attribute name="postalContractName" type="xs:string" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="PrintContent">
-		<xs:sequence>
-			<xs:element name="PageCount" type="xs:integer" minOccurs="0"/>
-			<xs:element name="FileName" type="xs:string"/>
-			<xs:element name="MimeType" type="xs:string"/>
-		</xs:sequence>
+		<xs:attribute name="filename" type="ns1:non-empty-string" use="required"/>
+		<xs:attribute name="pageCount" type="xs:integer" use="required"/>
+		<xs:attribute name="mimeType" type="ns1:non-empty-string" use="required"/>
+		<xs:attribute name="hashSHA256"/>
 	</xs:complexType>
+	<xs:simpleType name="non-empty-string">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

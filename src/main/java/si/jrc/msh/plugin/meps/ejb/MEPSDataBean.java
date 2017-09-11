@@ -33,7 +33,7 @@ import si.laurentius.commons.utils.xml.XMLUtils;
 import si.laurentius.plugin.meps.MEPSData;
 import si.laurentius.plugin.meps.PartyType;
 import si.laurentius.plugin.meps.PhysicalAddressType;
-import si.laurentius.plugin.meps.ServiceType;
+
 
 /**
  * @author Jože Rihtaršič
@@ -63,11 +63,7 @@ public class MEPSDataBean implements MEPSDataInterface {
 
   }
 
-  @Override
-  public List<ServiceType> getServices() {
-    
-    return mepsData != null && mepsData.getServices()!=null ? mepsData.getServices().getServices() : Collections.emptyList();
-  }
+
 
   @Override
   public List<PhysicalAddressType> getAddresses() {

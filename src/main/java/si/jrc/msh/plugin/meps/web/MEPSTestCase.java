@@ -12,7 +12,6 @@ import javax.faces.bean.SessionScoped;
 import org.primefaces.context.RequestContext;
 import si.jrc.msh.plugin.meps.web.dlg.DialogProgress;
 import si.laurentius.commons.utils.SEDLogger;
-import si.laurentius.plugin.meps.ServiceType;
 
 @SessionScoped
 @ManagedBean(name = "mepsTestCase")

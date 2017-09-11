@@ -1,71 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07 (CIF VSRS) -->
+<!-- edited with XMLSpy v2008 (http://www.altova.com) by XMLSpy 2007 Professional Ed., Installed for 5 users (with SMP from 2007-02-06 to 2008-02-07) (CIF VSRS) -->
 <xs:schema xmlns:tns="http://meps.laurentius.si/report" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://meps.laurentius.si/report">
-	<xs:complexType name="MailStatusReport">
-		<xs:sequence>
-			<xs:element name="MailStatus" type="tns:Status" minOccurs="0" maxOccurs="unbounded"/>
-		</xs:sequence>
-		<xs:attribute name="date" type="xs:date" use="required">
-			<xs:annotation>
-				<xs:documentation>Date when status accured for all listed mails</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="mepsPackageCode" type="xs:integer" use="required">
-			<xs:annotation>
-				<xs:documentation>vsrs package id in which listed  mails were sent to process
-</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="postalPackageCode" type="xs:string" use="required">
-			<xs:annotation>
-				<xs:documentation>Post book id defined by Posta Slovenije d.o.o.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
-	<xs:complexType name="Status">
-		<xs:attribute name="id" type="xs:integer" use="required">
-			<xs:annotation>
-				<xs:documentation>mail id</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="status" use="required">
-			<xs:annotation>
-				<xs:documentation>Status</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:token">					
-					<xs:enumeration value="PROCESSED">
-						<xs:annotation>
-							<xs:documentation source="Pošiljka je kuvertirana in oddana na pošto"/>
-						</xs:annotation>
-					</xs:enumeration>
-					<xs:enumeration value="ERROR">
-						<xs:annotation>
-							<xs:documentation source="Napaka pri kuvertiranju pošiljke - pretežka, slab pdf, itd"/>
-						</xs:annotation>
-					</xs:enumeration>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-		<xs:attribute name="errDesc">
-			<xs:annotation>
-				<xs:documentation>error description</xs:documentation>
-			</xs:annotation>
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:maxLength value="500"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-		<xs:attribute name="mass" type="xs:integer" use="optional">
-			<xs:annotation>
-				<xs:documentation>Mass of mail in grams measured by contractor </xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="contentPageCount" type="xs:integer" use="optional">
-			<xs:annotation>
-				<xs:documentation>Number of  sheet of papers on which document had been printed </xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
+    <xs:element name="MailStatusReport" type="tns:MailStatusReport" />
+    <xs:complexType name="MailStatusReport">
+        <xs:sequence>
+            <xs:element name="MailStatus" type="tns:Status" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="date" type="xs:dateTime" use="required">
+            <xs:annotation>
+                <xs:documentation>Datum in čas generiranje sporočila </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="serviceRequestorEBox" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Naslov e-box uporabnika storitve tiskanja kuvertiranja (pošiljatelj pošiljke za tiskanje)</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:maxLength value="512"/>
+                    <xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="serviceRequestorName" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Naziv uporabnika storitve tiskanja in kuvertiranja. </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="512"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="mepsEBox" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">MEPS predal na katerega je bil poslan zahtevek za tiskanje in kuvertiranje (prejemnik pošiljke za tiskanja)</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:maxLength value="512"/>
+                    <xs:pattern value="[_\-a-zA-Z0-9\.\+]+@[a-zA-Z0-9](\.?[\-a-zA-Z0-9]*[a-zA-Z0-9])*"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="mepsName" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl"> Meps naziv predala na katerega je bil poslan zahtevek za tiskanje in kuvertiranje  </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="512"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="service" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Storitev tiskanja </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:maxLength value="512"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <!-- Naslednji podatki so skupni vsem pošiljkam v satusem porocilu -->
+    </xs:complexType>
+    <xs:complexType name="Status">
+        <xs:attribute name="refToMessageId" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl">Referenca na messageId dohodne pošiljke. Vrednost atributa je enaka
+                    Messaging/MessageInfo/RefToMessageId v ebMS headerju izhodnega sporočila. 
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="256"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="senderMessageId" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="sl"> Enolična oznaka pošiljke pošiljatelja. Kombinacija:  @senderEBox  in @senderMessageId mora bit enolična. ID se uporablja tudi za kontrolo pri oddaji pošiljke v vročanje.  Namen atributa je kontrola, ali je pošiljka že bila oddana v dostavo. 
+                    V primeru, da se sendereBox in senderMessageId že nahaja v tabeli za transport. Servis vrne mshMessageId "prvega sporočila" </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="256"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="status" use="required">
+            <xs:annotation>
+                <xs:documentation>Status</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:token">
+                    <xs:enumeration value="PROCESSED">
+                        <xs:annotation>
+                            <xs:documentation source="Pošiljka je kuvertirana in oddana na pošto"/>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="ERROR">
+                        <xs:annotation>
+                            <xs:documentation source="Napaka pri kuvertiranju pošiljke - pretežka, slab pdf, itd"/>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="DELETED">
+                        <xs:annotation>
+                            <xs:documentation source="Posiljka, je bila natisnjena vendar ni bila oddana na pošto, ker je bila na prošnjo pošiljatelja stornirana"/>
+                        </xs:annotation>
+                    </xs:enumeration>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="errDesc">
+            <xs:annotation>
+                <xs:documentation>error description</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:maxLength value="500"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="mass" type="xs:integer" use="optional">
+            <xs:annotation>
+                <xs:documentation>Masa celotne pošilje (ovojnica in strani v ovojnici)</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="printedPageCount" type="xs:integer" use="optional">
+            <xs:annotation>
+                <xs:documentation>Število natisnjenih strani</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="upnCode" type="xs:token" use="optional">
+            <xs:annotation>
+                <xs:documentation>UPN koda pošiljke s katero je bila oddana na pošto (R številka)</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="processId" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>Enolična oznaka obdelave paketa pošiljk</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="postalId" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>Enolična poštna oznaka paketa pošiljk. Id oddajnega popisa</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="contentPageCount" type="xs:integer" use="optional">
+            <xs:annotation>
+                <xs:documentation>Število natisnjenih strani</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="date" type="xs:date" use="optional">
+            <xs:annotation>
+                <xs:documentation>Datum statusa</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
 </xs:schema>

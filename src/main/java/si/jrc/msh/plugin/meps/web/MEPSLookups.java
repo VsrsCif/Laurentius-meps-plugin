@@ -21,11 +21,12 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import si.jrc.msh.plugin.meps.ejb.MEPSDataInterface;
+import si.jrc.msh.plugin.meps.enums.MEPSService;
 import si.laurentius.commons.SEDSystemProperties;
 import si.laurentius.commons.utils.SEDLogger;
 import si.laurentius.plugin.meps.PartyType;
 import si.laurentius.plugin.meps.PhysicalAddressType;
-import si.laurentius.plugin.meps.ServiceType;
+
 
 /**
  *
@@ -54,20 +55,12 @@ public class MEPSLookups {
     return FacesContext.getCurrentInstance();
   }
 
-  public List<ServiceType> getServices() {
-    return mdata.getServices();
+  public MEPSService[] getServices() {
+    return MEPSService.values();
   }
   
   
-  public ServiceType getServiceByName(String name) {
-    List<ServiceType> tsLst = mdata.getServices();
-    for(ServiceType ts: tsLst ){
-      if (Objects.equals(ts.getName(), name)){
-        return ts;
-      }
-    }
-    return null;
-  }
+
 
   public List<PhysicalAddressType> getAddresses() {
     return mdata.getAddresses();

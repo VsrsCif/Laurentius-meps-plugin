@@ -13,6 +13,7 @@ public class MepsFolderProperties {
   String number;
   String date;
   String dateTime;
+  String service;
 
   public String getNumber() {
     return number;
@@ -36,6 +37,14 @@ public class MepsFolderProperties {
 
   public void setDateTime(String datetime) {
     this.dateTime = datetime;
+  }
+
+  public String getService() {
+    return service;
+  }
+
+  public void setService(String service) {
+    this.service = service;
   }
   
   

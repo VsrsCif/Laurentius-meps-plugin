@@ -23,13 +23,7 @@
 	</xs:complexType>
 	<xs:complexType name="MEPSData">
 		<xs:sequence>
-			<xs:element name="Services">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="Service" type="ns1:ServiceType" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
+			
 			<xs:element name="Addresses">
 				<xs:complexType>
 					<xs:sequence>
@@ -72,17 +66,5 @@
 		<xs:attribute name="Country" type="xs:string" use="required"/>
 		<xs:attribute name="CountryCode" type="xs:token" use="required"/>
 	</xs:complexType>
-	<xs:complexType name="ServiceType">
-		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="envelopeName" type="xs:string" use="required"/>
-		<xs:attribute name="type" type="xs:string" use="required"/>
-		<xs:attribute name="useUPN" type="xs:boolean" use="required"/>
-		<xs:attribute name="UPNPrefix">
-			<xs:simpleType>
-				<xs:restriction base="xs:token">
-					<xs:length value="2"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-	</xs:complexType>
+	
 </xs:schema>

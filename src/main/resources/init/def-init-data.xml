@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:DefaultInitData xmlns:ns3="http://laurentius.si/interceptor" 
+                     xmlns:ns2="http://laurentius.si/cron"
+                     xmlns:ns1="http://laurentius.si/plugin/def"
+                     xmlns:pmd="http://msh.laurentius.si/pmode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ns1:PModeData>
+       
+        <pmd:Security id="sign_sha256" WSSVersion="1.1">
+            <pmd:X509>
+                <pmd:Signature hashFunction="http://www.w3.org/2001/04/xmlenc#sha256" algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256">
+                    <pmd:Reference allAttachments="true">
+                        <pmd:Elements>
+                            <pmd:XPath xpath="env:Header/eb3:Messaging">
+                                <pmd:Namespace prefix="eb3" namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/"/>
+                                <pmd:Namespace prefix="env" namespace="http://www.w3.org/2003/05/soap-envelope"/>
+                            </pmd:XPath>
+                        </pmd:Elements>
+                    </pmd:Reference>
+                </pmd:Signature>
+            </pmd:X509>
+        </pmd:Security>
+        <pmd:ReceptionAwareness id="AS4ReceiptResponse" replyPattern="response" receiptType="AS4Receipt">
+            <pmd:Retry maxRetries="3" multiplyPeriod="3" period="5678"/>
+            <pmd:DuplicateDetection windowPeriode="P1Y" eliminate="true"/>
+        </pmd:ReceptionAwareness>
+        
+    </ns1:PModeData>
+    <ns1:PluginData>
+        <ns3:SEDInterceptor  name="MEPS_InMessages" active="true" interceptEvent="InMessage" interceptRole="All">
+            <ns3:SEDInterceptorRule  property="Service" predicate="StartsWith" value="PrintAndEnvelope-"/>
+            <ns3:SEDInterceptorInstance plugin="MEPSPlugin" type="MEPSInInterceptor" pluginVersion="1.0.0"/>
+        </ns3:SEDInterceptor>
+        <ns3:SEDInterceptor name="MEPS_OutMessages" active="true" interceptEvent="OutMessage" interceptRole="All">
+            <ns3:SEDInterceptorRule  property="Service" predicate="StartsWith" value="PrintAndEnvelope-"/>
+            <ns3:SEDInterceptorInstance plugin="MEPSPlugin" type="MEPSOutInterceptor" pluginVersion="1.0.0"/>
+        </ns3:SEDInterceptor>
+        
+        <ns2:SEDCronJob  name="MEPSProviderExport" active="false" second="0" minute="05" hour="16" dayOfMonth="*" month="*" dayOfWeek="1-5">
+            <ns2:SEDTask plugin="MEPSPlugin" type="MEPS-Process" pluginVersion="1.0.0" name="b.department" active="true">
+                <ns2:SEDTaskProperty  key="meps.folder">${laurentius.home}/meps/export/BDepartment/${Date}_${Number}_${Service}</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty  key="meps.metadata.filename">envelopedata_${Number}.txt</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty  key="meps.sender.sedbox">b.department@mb-laurentius.si</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty  key="meps.service">PrintAndEnvelope-LegalZPP,PrintAndEnvelope-LegalZPP_NP,PrintAndEnvelope-LegalZUP,PrintAndEnvelope-C5,PrintAndEnvelope-C5-R,PrintAndEnvelope-C5-AD,PrintAndEnvelope-Package,PrintAndEnvelope-Package_R,PrintAndEnvelope-Package_AD</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.mail.max.count">15000</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.email.to"></ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.email.from">change.me@not.exists.com</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.email.subject">[Laurentius] test mail</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="mail.config.jndi">java:jboss/mail/Default</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.generate.test.data">true</ns2:SEDTaskProperty>
+            </ns2:SEDTask>
+            <ns2:SEDTask plugin="MEPSPlugin" type="MEPS-Process" pluginVersion="1.0.0" name="a.department" active="true">
+                <ns2:SEDTaskProperty key="meps.folder">${laurentius.home}/meps/export/ADepartment/${Date}_${Number}_${Service}</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.metadata.filename">envelopedata_${Number}.txt</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.sender.sedbox">a.department@mb-laurentius.si</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.service">PrintAndEnvelope-LegalZPP,PrintAndEnvelope-LegalZPP_NP,PrintAndEnvelope-LegalZUP,PrintAndEnvelope-C5,PrintAndEnvelope-C5-R,PrintAndEnvelope-C5-AD,PrintAndEnvelope-Package,PrintAndEnvelope-Package_R,PrintAndEnvelope-Package_AD</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.mail.max.count">15000</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.email.to"></ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.email.from">change.me@not.exists.com</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.email.subject">[Laurentius] test mail</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="mail.config.jndi">java:jboss/mail/Default</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty key="meps.generate.test.data">true</ns2:SEDTaskProperty>
+            </ns2:SEDTask>
+        </ns2:SEDCronJob>
+        <ns2:SEDCronJob  name="MEPSStatusSubmitter" active="true" second="0" minute="*/5" hour="*" dayOfMonth="*" month="*" dayOfWeek="*">
+            <ns2:SEDTask plugin="MEPSPlugin" type="MEPSStatusSubmitter" pluginVersion="1.0.0"  name="Status" active="true">
+                <ns2:SEDTaskProperty  key="file.submit.folder">${laurentius.home}/meps/status/</ns2:SEDTaskProperty>
+                <ns2:SEDTaskProperty  key="file.submit.suffix">.processed</ns2:SEDTaskProperty>
+            </ns2:SEDTask>
+        </ns2:SEDCronJob>
+       
+    </ns1:PluginData>
+</ns1:DefaultInitData>

@@ -22,7 +22,7 @@ public class AppConstant {
    */
   public static final String S_PANEL_TEST = "S_PANEL_TEST";
   
-  public static final String PLUGIN_NAME = "MEPS";
+  public static final String PLUGIN_TYPE = "MEPS";
   
   
   public static final String ROOT_FOLDER = "/meps/";

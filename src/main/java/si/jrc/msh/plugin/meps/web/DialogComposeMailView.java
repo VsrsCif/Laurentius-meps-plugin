@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -20,6 +19,8 @@ import javax.faces.bean.SessionScoped;
 import javax.xml.bind.JAXBException;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
+import si.jrc.msh.plugin.meps.enums.MEPSAction;
+import si.jrc.msh.plugin.meps.enums.MEPSService;
 import si.laurentius.commons.SEDJNDI;
 import si.laurentius.commons.enums.MimeValue;
 import si.laurentius.commons.exception.StorageException;
@@ -36,7 +37,6 @@ import si.laurentius.msh.outbox.mail.MSHOutMail;
 import si.laurentius.msh.outbox.payload.MSHOutPart;
 import si.laurentius.msh.outbox.payload.MSHOutPayload;
 import si.laurentius.plugin.meps.PartyType;
-import si.laurentius.plugin.meps.ServiceType;
 
 /**
  *
@@ -64,7 +64,7 @@ public class DialogComposeMailView extends AbstractJSFView {
 
   String serviceProvider;
   String serviceRequestor;
-  
+
   si.laurentius.plugin.meps.PhysicalAddressType selectedAddress;
 
   public si.laurentius.plugin.meps.PhysicalAddressType getSelectedAddress() {
@@ -76,8 +76,6 @@ public class DialogComposeMailView extends AbstractJSFView {
     this.selectedAddress = selectedAddress;
   }
 
-  
-  
   public String getServiceProvider() {
     return serviceProvider;
   }
@@ -190,27 +188,17 @@ public class DialogComposeMailView extends AbstractJSFView {
   }
 
   public void setCurrentService(String srv) {
-    List<ServiceType> lst = pluginLookups.getServices();
-    for (ServiceType st : lst) {
-      if (Objects.equals(st.getName(), srv)) {
-        getPostalData().setMepsService(st.getName());
-        getPostalData().setEnvelopeType(st.getEnvelopeName());
-        getPostalData().getUPNCode().setPrefix(st.getUPNPrefix());
-        return;
-      }
-    }
+    MEPSService ms = MEPSService.getValueByService(srv);
+
+    getPostalData().setMepsService(ms.getService());
+    getPostalData().setEnvelopeType(ms.getEnvelopeName());
+    getPostalData().getUPNCode().setPrefix("RR");
 
   }
 
   public boolean hasUPNCode() {
-    List<ServiceType> lst = pluginLookups.getServices();
-    for (ServiceType st : lst) {
-      if (Objects.equals(st.getName(), getCurrentService())) {
-        return st.isUseUPN();
-
-      }
-    }
-    return true;
+    MEPSService ms = MEPSService.getValueByService(getCurrentService());
+    return ms.hasUPNCode();
 
   }
 
@@ -236,13 +224,13 @@ public class DialogComposeMailView extends AbstractJSFView {
         newOutMail.setId(null);
         newOutMail.
                 setService(getEnvelopeData().getPostalData().getMepsService());
-        newOutMail.setAction("AddMail");
+        newOutMail.setAction(MEPSAction.ADD_MAIL.getValue());
         newOutMail.setSenderEBox(getServiceRequestor());
         newOutMail.setReceiverEBox(getServiceProvider());
         newOutMail.setReceiverName(newOutMail.getReceiverEBox());
         newOutMail.setSenderName(newOutMail.getSenderEBox());
         newOutMail.setSubject("Print and envelope: " + getEnvelopeData().
-                getSenderMailData().getCaseCode());
+                getSenderMailData().getCaseNumber());
 
         String pmodeId = Utils.getPModeIdFromOutMail(newOutMail);
 
@@ -283,9 +271,8 @@ public class DialogComposeMailView extends AbstractJSFView {
     }
   }
 
-  
-  public void setSelectedAddressToMail(){
-    if (selectedAddress!=null &&  getReceiverAddress()!=null){
+  public void setSelectedAddressToMail() {
+    if (selectedAddress != null && getReceiverAddress() != null) {
       getReceiverAddress().setName(getSelectedAddress().getName());
       getReceiverAddress().setName2(getSelectedAddress().getName2());
       getReceiverAddress().setAddress(getSelectedAddress().getAddress());
@@ -294,11 +281,11 @@ public class DialogComposeMailView extends AbstractJSFView {
       getReceiverAddress().setPostalCode(getSelectedAddress().getPostalCode());
       getReceiverAddress().setCountry(getSelectedAddress().getCountry());
       getReceiverAddress().setCountryCode(getSelectedAddress().getCountryCode());
-      
+
     }
     addCallbackParam(CB_PARA_SAVED, true);
   }
-          
+
   public void createNewMail() {
     PartyType.PostContract pc = pluginLookups.getPostContract();
     newOutMail = new MSHOutMail();
@@ -308,21 +295,22 @@ public class DialogComposeMailView extends AbstractJSFView {
     envelopeData.setExecutorId(spc.getName());
     envelopeData.setPostalData(new PostalData());
     envelopeData.getPostalData().setUPNCode(new PostalData.UPNCode());
-    if (!pluginLookups.getServices().isEmpty()) {
-      ServiceType st = pluginLookups.getServices().get(0);
-      envelopeData.getPostalData().setMepsService(st.getName());
-      envelopeData.getPostalData().setEnvelopeType(st.getEnvelopeName());
-      if (st.isUseUPN()) {
-        envelopeData.getPostalData().getUPNCode().setPrefix(st.getUPNPrefix());
+    MEPSService ms = MEPSService.LegalZPP;
+   
+      
+      envelopeData.getPostalData().setMepsService(ms.getService());
+      envelopeData.getPostalData().setEnvelopeType(ms.getEnvelopeName());
+      if (ms.hasUPNCode()) {
+        envelopeData.getPostalData().getUPNCode().setPrefix("RR");
         envelopeData.getPostalData().getUPNCode().setSuffix("SI");
       } else {
         envelopeData.getPostalData().getUPNCode().setPrefix("");
-        envelopeData.getPostalData().getUPNCode().setCode(null);
+        envelopeData.getPostalData().getUPNCode().setNumber(null);
         envelopeData.getPostalData().getUPNCode().setControl(null);
         envelopeData.getPostalData().getUPNCode().setSuffix("");
 
       }
-    }
+   
     if (pc != null) {
       envelopeData.getPostalData().setPostalContractName(pc.getName());
       envelopeData.getPostalData().setPostalContractId(pc.getCode());

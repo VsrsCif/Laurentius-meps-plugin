@@ -9,7 +9,7 @@ import java.util.List;
 import javax.ejb.Local;
 import si.laurentius.plugin.meps.PartyType;
 import si.laurentius.plugin.meps.PhysicalAddressType;
-import si.laurentius.plugin.meps.ServiceType;
+
 
 /**
  *
@@ -18,7 +18,7 @@ import si.laurentius.plugin.meps.ServiceType;
 @Local
 public interface MEPSDataInterface {
 
-  List<ServiceType> getServices();
+
 
   List<PhysicalAddressType> getAddresses();
 

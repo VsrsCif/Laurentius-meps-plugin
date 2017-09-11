@@ -20,8 +20,12 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Local;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.xml.bind.JAXBException;
+import si.jrc.msh.plugin.meps.utils.PModeUtils;
 import si.laurentius.commons.SEDGUIConstants;
 import si.laurentius.commons.utils.SEDLogger;
+import si.laurentius.commons.utils.xml.XMLUtils;
+import si.laurentius.plugin.def.DefaultInitData;
 import si.laurentius.plugin.def.MenuItem;
 import si.laurentius.plugin.interfaces.AbstractPluginDescription;
 import si.laurentius.plugin.interfaces.PluginDescriptionInterface;
@@ -34,25 +38,51 @@ import si.laurentius.plugin.interfaces.exception.PluginException;
 @Singleton
 @Startup
 @Local(PluginDescriptionInterface.class)
-public class MEPSPluginDescription extends  AbstractPluginDescription {
-  
+public class MEPSPluginDescription extends AbstractPluginDescription {
+
   private static final SEDLogger LOG = new SEDLogger(MEPSPluginDescription.class);
   MenuItem miRoot = null;
   
+  PModeUtils mPMDUtils = new PModeUtils();
+
+  @Override
+  public DefaultInitData getDefaultInitData() {
+    try {
+      DefaultInitData did = (DefaultInitData) XMLUtils.deserialize(MEPSPluginDescription.class.
+              getResourceAsStream("/init/def-init-data.xml"),
+              DefaultInitData.class);
+      
+      did.getPModeData().getServices().clear();
+      did.getPModeData().getServices().addAll(mPMDUtils.createServices());
+      did.getPModeData().getPModes().clear();
+      did.getPModeData().getPModes().addAll(mPMDUtils.createPModes());
+      
+      return did;
+    } catch (JAXBException ex) {
+      LOG.logError("Error parsing default init data!", ex);
+    }
+    return null;
+  }
+
+  
+
   @PostConstruct
-  private void postConstruct() {    
+  private void postConstruct() {
     try {
       // and log further application specific info
       registerPluginComponentInterface(MEPSTask.class);
+      registerPluginComponentInterface(MEPSStatusSubmitter.class);
       registerPluginComponentInterface(MEPSInInterceptor.class);
-      
-     // register plugin
+      registerPluginComponentInterface(MEPSOutInterceptor.class);
+
+      // register plugin
       registerPlugin();
     } catch (PluginException ex) {
-      LOG.logError("Error occured while registering plugin: " + ex.getMessage(), ex);
+      LOG.logError("Error occured while registering plugin: " + ex.getMessage(),
+              ex);
     }
   }
-  
+
   /**
    *
    * @return
@@ -61,7 +91,6 @@ public class MEPSPluginDescription extends  AbstractPluginDescription {
   public String getDesc() {
     return "Machine printing as eveloping service module";
   }
-
 
   @Override
   public String getVersion() {
@@ -77,10 +106,10 @@ public class MEPSPluginDescription extends  AbstractPluginDescription {
     return "MEPS Plugin";
   }
 
-    @Override
+  @Override
   public MenuItem getMenu() {
     if (miRoot == null) {
-      miRoot  = new MenuItem();
+      miRoot = new MenuItem();
       miRoot.setName(getName());
     }
     return miRoot;
@@ -90,6 +119,7 @@ public class MEPSPluginDescription extends  AbstractPluginDescription {
   public MenuItem getProcessMenu() {
     return null;
   }
+
   /**
    *
    * @return
@@ -98,15 +128,15 @@ public class MEPSPluginDescription extends  AbstractPluginDescription {
   public String getWebUrlContext() {
     return "/laurentius-web/meps";
   }
-  
+
   /**
-     *
-     * @return
-     */
-    @Override
-    public List<String> getWebPageRoles() {
-        return Arrays.asList(SEDGUIConstants.ROLE_USER, SEDGUIConstants.ROLE_ADMIN);
-    }
+   *
+   * @return
+   */
+  @Override
+  public List<String> getWebPageRoles() {
+    return Arrays.asList(SEDGUIConstants.ROLE_USER, SEDGUIConstants.ROLE_ADMIN);
+  }
 
   /**
    *
