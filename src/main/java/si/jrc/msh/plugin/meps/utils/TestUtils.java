@@ -176,17 +176,17 @@ public class TestUtils {
     envelopeData.getPostalData().setPostalContractName("Contract");
     envelopeData.getPostalData().setPostalContractId("");
     envelopeData.getPostalData().setSubmitPostalCode("1102");
-    envelopeData.getPostalData().setSubmitPostalName("Ljublana");
+    envelopeData.getPostalData().setSubmitPostalName("Ljubljana");
 
     envelopeData.setSenderAddress(new PhysicalAddressType());
     envelopeData.getSenderAddress().setAddress(sa[2]);
     envelopeData.getSenderAddress().setCountry("Slovenija");
     envelopeData.getSenderAddress().setCountryCode("SVN");
-    envelopeData.getSenderAddress().setName(sa[0]);
-    envelopeData.getSenderAddress().setName2(sa[1]);
-    envelopeData.getSenderAddress().setPostalCode(sa[3]);
-    envelopeData.getSenderAddress().setPostalName(sa[4]);
-    envelopeData.getSenderAddress().setTown(sa[4]);
+    envelopeData.getSenderAddress().setName(mo.getSenderName());
+    envelopeData.getSenderAddress().setName2("");
+    envelopeData.getSenderAddress().setPostalCode("1000");
+    envelopeData.getSenderAddress().setPostalName("Ljubljana");
+    envelopeData.getSenderAddress().setTown("Ljubljana");
 
     envelopeData.setReceiverAddress(new PhysicalAddressType());
     envelopeData.getReceiverAddress().setAddress(sa[2]);

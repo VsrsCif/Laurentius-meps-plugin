@@ -2,33 +2,16 @@
 Project Laurentius-meps-plugin is [Laurentius](https://github.com/VsrsCif/Laurentius)  plugin 
 for using Machine printing and eveloping service. 
 
-## User case:
+## Usecase:
 Client (service requester) send mail (envelope data and contents in pdf form) to service provider.
-Service provider (at least once a day) print and envelope all received requests. 
-Enveloped mail is than submitted to local post for delivery and status report is 
-submitted to service requester all requests (PROCESSED, DELETED). 
+Service provider (at least once a day) print and envelope all received requests. Printed and enveloped mail is delivered to post office for physical delivery. After that
+status report is submitted to service requester for all requests (mail) (PROCESSED, DELETED). 
 
 ![MEPS service sequence diagram](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/images/meps-actions.png)
 
 
-###Client (service requester)
-Plugin on client side (service requester) plugin validate envelope data and concatenate
-pdfs. Because both side printing is presumed, concatenation adds blank page to all 
-documents with odd page count.
-
-
-###Service provider
-Plugin on service provider validates received mail (Validates envelope data and counts pdf pages (test if pdf is readable)).
-For service provider plugin has two "cron tasks".
- * MEPSTask: create daily package for machine printing and enveloping
- * MEPSStatusSubmitter: create and submit status report for all processed requests to requestor.
-
-
-
-### Supported services
+## Supported services
 MEPS Service type correspond to mail envelope type and postal delivery service.
-
-
 
 | Service type  | description | envelope exampe |
 | ------------- | ------------- | ------------- |
@@ -41,6 +24,31 @@ MEPS Service type correspond to mail envelope type and postal delivery service.
 | PrintAndEnvelope-LegalZPP  | Legal service in civil procedures - personal (1g - 2kg) | [ZPP envelope (personal)](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_osebno.pdf) | 
 | PrintAndEnvelope-LegalZPP_NP | Legal service in civil procedures  (1g - 2kg)|   [ZPP envelope ]( https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_navadno.pdf) |
 | PrintAndEnvelope-LegalZUP |  Legal service in administrative procedures (1g - 2kg)|   [ZUP envelope ](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZUP.pdf) |
+
+
+## Interceptors
+Interceptors are Laurentius plugins for intercept and process out/in mail during transmission. 
+### MEPSOutInterceptor
+Use of interceptor is in service requester side. For action "AddMAil" interceptor validates and 
+concatenate all pdf's to one pdf as printable content for mail. 
+"Concatenation" adds blank page to all pdf documents with odd number of pages. 
+(Printing is on both side of sheet of paper. Blank page ensures that each pdf document starts on new sheet of paper.
+Only "concenated PDF" and envelope data are sent to service provider.
+
+Other actions are ignored!
+
+### MEPSInInterceptor
+Use of interceptor is on both side (service requester/ service provider). 
+For "service provider" on action "AddMail" interceptor validates envelope data and pdf content.
+If envelope data and "printable content" are valid AS4 Receipt is returned, else fault (with cause description) is triggered. 
+For "service requester" on action "StatusReport" updates all out mail statuses.
+
+
+## Cron task
+Plugin contains two cron tasks for service provider:
+ * MEPSTask: create daily package for machine printing and enveloping
+ * MEPSStatusSubmitter: create and submit status report for all processed requests to requestor.
+
 
 
 ### Prerequisites

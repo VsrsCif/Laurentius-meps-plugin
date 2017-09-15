@@ -16,18 +16,19 @@ package si.jrc.msh.plugin.meps;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -76,17 +77,19 @@ import si.laurentius.plugin.interfaces.exception.TaskException;
 public class MEPSTask implements TaskExecutionInterface {
 
   public static final String KEY_FOLDER = "meps.folder";
-  public static final String KEY_METADATA_FIlENAME = "meps.metadata.filename";
+  public static final String KEY_METADATA_FILENAME = "meps.metadata.filename";
+  public static final String KEY_METADATA_ENCODING = "meps.metadata.encoding";
   public static final String KEY_SENDER_SEDBOX = "meps.sender.sedbox";
   public static final String KEY_SENDER_SERVICE = "meps.service";
   public static final String KEY_MAX_MAIL_COUT = "meps.mail.max.count";
+
   public static final String KEY_GENERATE_TEST_FILE = "meps.generate.test.data";
 
   public static final String KEY_EMAIL_SUBJECT = "meps.email.subject";
   public static final String KEY_EMAIL_FROM = "meps.email.from";
   public static final String KEY_EMAIL_TO = "meps.email.to";
-  
-  public static final String [] TEST_STATUS = {"PROCESSED","DELETED","IGNORED"};
+
+  public static final String[] TEST_STATUS = {"PROCESSED", "DELETED", "IGNORED"};
 
   /**
    *
@@ -100,7 +103,7 @@ public class MEPSTask implements TaskExecutionInterface {
 
   @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
   SEDDaoInterface mDB;
-  
+
   private MEPSUtils mmuUtils = new MEPSUtils();
 
   /**
@@ -144,10 +147,22 @@ public class MEPSTask implements TaskExecutionInterface {
     }
 
     String envelopeDataFilenameMask = "";
-    if (!p.containsKey(KEY_METADATA_FIlENAME)) {
+    if (!p.containsKey(KEY_METADATA_FILENAME)) {
       envelopeDataFilenameMask = "envelopedata_${Number}.txt";
     } else {
-      envelopeDataFilenameMask = p.getProperty(KEY_METADATA_FIlENAME);
+      envelopeDataFilenameMask = p.getProperty(KEY_METADATA_FILENAME);
+    }
+
+    Charset charset = null;
+    if (p.containsKey(KEY_METADATA_ENCODING)) {
+      String chs = p.getProperty(KEY_METADATA_ENCODING);
+      if (Charset.isSupported(chs)) {
+        String msg = "Charset:  '" + chs + "' is not supported!";
+        LOG.logError(msg, null);
+        throw new TaskException(TaskException.TaskExceptionCode.InitException,
+                msg);
+      }
+      charset = Charset.forName(chs);
     }
 
     int maxMailProc = 1500;
@@ -199,31 +214,34 @@ public class MEPSTask implements TaskExecutionInterface {
       miFilter.setService(service);
 
       File envelopeDataFile = exportMailForFilter(miFilter, sw, sedBox,
-              maxMailProc, exportFolderMask, envelopeDataFilenameMask);
+              maxMailProc, exportFolderMask, envelopeDataFilenameMask, charset);
 
       // generate test file
-      if (genTestData && envelopeDataFile!= null) {
-        File testProcFile = new File(envelopeDataFile.getParentFile(), envelopeDataFile.getName() + ".processed");
-        try (BufferedReader br = new BufferedReader(new FileReader(envelopeDataFile));
-                FileWriter fileWriter = new FileWriter(testProcFile) ) {
-          
+      if (genTestData && envelopeDataFile != null) {
+        File testProcFile = new File(envelopeDataFile.getParentFile(),
+                envelopeDataFile.getName() + ".processed");
+        try (BufferedReader br = new BufferedReader(new FileReader(
+                envelopeDataFile));
+                FileWriter fileWriter = new FileWriter(testProcFile)) {
+
           Calendar cal = Calendar.getInstance();
-          String date = String.format(DATE_FORMAT_SVN, cal.get(Calendar.DAY_OF_MONTH),
-              cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+          String date = String.format(DATE_FORMAT_SVN, cal.get(
+                  Calendar.DAY_OF_MONTH),
+                  cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
           Random r = new Random();
-          
+
           for (String line; (line = br.readLine()) != null;) {
             String[] ln = line.split("|");
-            
-            int masa = r.nextInt(1000)+11;
-            
+
+            int masa = r.nextInt(1000) + 11;
+
             int iStatus = r.nextInt(10);
-            iStatus = iStatus>2?0:iStatus;
-            
+            iStatus = iStatus > 2 ? 0 : iStatus;
+
             fileWriter.append(line);
-            
-            fileWriter.append(String.format("|x|%d|9|%d|OK|RECEIVED|%s|%s\n",masa,r.nextInt(99999), TEST_STATUS[iStatus], date ));
-            
+
+            fileWriter.append(String.format("|x|%d|9|%d|OK|RECEIVED|%s|%s\n",
+                    masa, r.nextInt(99999), TEST_STATUS[iStatus], date));
 
           }
           fileWriter.flush();
@@ -253,7 +271,7 @@ public class MEPSTask implements TaskExecutionInterface {
 
   public File exportMailForFilter(MSHInMail miFilter, StringWriter sw,
           String sedBox, int maxMailProc,
-          String exportFolderMask, String envelopeDataFilenameMask) throws TaskException {
+          String exportFolderMask, String envelopeDataFilenameMask, Charset charset) throws TaskException {
     long l = LOG.logStart();
     List<MSHInMail> lst = mDB.
             getDataList(MSHInMail.class, -1, maxMailProc, "Id", "ASC",
@@ -300,7 +318,7 @@ public class MEPSTask implements TaskExecutionInterface {
       // create export folder
       exportFolder = new File(StringFormater.format(exportFolderMask, mp));
       mmuUtils.createFolderIfNotExist(exportFolder);
-      
+
       // create envelope data
       envelopeDataFile = new File(exportFolder, StringFormater.format(
               envelopeDataFilenameMask, mp));
@@ -324,9 +342,10 @@ public class MEPSTask implements TaskExecutionInterface {
       });
 
       // export all mail
-      FileWriter mailDataWriter = null;
-      try {
-        mailDataWriter = new FileWriter(envelopeDataFile);
+      
+      Writer mailDataWriter = null;
+      try (FileOutputStream fos =  new FileOutputStream(envelopeDataFile)) {
+        mailDataWriter = new  OutputStreamWriter( fos,  charset);
         for (MSHInMail m : lst) {
           exportData(m, mailDataWriter, exportFolder, miFilter.getService(),
                   iPackageNumber);
@@ -406,7 +425,7 @@ public class MEPSTask implements TaskExecutionInterface {
     return sw.toString();
   }
 
-  private void exportData(MSHInMail mInMail, FileWriter metadata,
+  private void exportData(MSHInMail mInMail, Writer metadata,
           File outFolder, String strFormatedTime, int packageId) throws TaskException {
     File envData = null;
     File export = null;
@@ -461,7 +480,7 @@ public class MEPSTask implements TaskExecutionInterface {
     }
 
     try {
-      String conntentFileName = "doc_" + mInMail.getMessageId() + ".pdf";
+      String conntentFileName = "doc_" + mInMail.getMessageId().replace('@', '_') + ".pdf";
       EnvelopeData ed = (EnvelopeData) XMLUtils.deserialize(envData,
               EnvelopeData.class);
 
@@ -584,10 +603,17 @@ public class MEPSTask implements TaskExecutionInterface {
                     PropertyType.String.getType(), null, null,
                     "${laurentius.home}/meps/export/${Date}_${Number}_${Service}"));
 
+    tt.getCronTaskPropertyDeves().add(createTTProperty(KEY_METADATA_FILENAME,
+            "Metadata filename", true,
+            PropertyType.String.getType(), null, null,
+            "envelopedata_${Number}.txt"));
+
     tt.getCronTaskPropertyDeves().add(
-            createTTProperty(KEY_METADATA_FIlENAME, "Metadata filename", true,
+            createTTProperty(KEY_METADATA_ENCODING,
+                    "Metadata encoding. If value is null, platform's default charset is setted",
+                    false,
                     PropertyType.String.getType(), null, null,
-                    "envelopedata_${Number}.txt"));
+                    "utf-8"));
 
     tt.getCronTaskPropertyDeves().add(
             createTTProperty(KEY_SENDER_SEDBOX, "Sender box", true,

@@ -21,15 +21,15 @@ import java.util.Objects;
  * @author Jože Rihtaršič
  */
 public enum MEPSService {
-  LegalZPP("PrintAndEnvelope-LegalZPP", "http://laurentius.si/meps", "LegalZPP", 1, 800, true),  // - max 2kg
-  LegalZPP_NP("PrintAndEnvelope-LegalZPP_NP", "http://laurentius.si/meps", "LegalZPP", 1, 800, true), // - max 2kg
-  LegalZUP("PrintAndEnvelope-LegalZUP", "http://laurentius.si/meps", "LegalZUP", 1, 800, true), // - max 2kg
-  C5("PrintAndEnvelope-C5", "http://laurentius.si/meps", "C5Envelope", 1, 800, false), // - max 2kg
-  C5_R("PrintAndEnvelope-C5-R", "http://laurentius.si/meps", "C5Envelope", 1, 800, true), // - max 2kg
-  C5_AD("PrintAndEnvelope-C5-AD", "http://laurentius.si/meps", "C5Envelope", 1, 800, true), // - max 2kg
-  Package("PrintAndEnvelope-Package", "http://laurentius.si/meps", "Package", 800, 12000, false), // 2kg  - 30kg
-  Package_R("PrintAndEnvelope-Package_R", "http://laurentius.si/meps", "Package", 800, 12000, true),//2kg -  30kg
-  Package_AD("PrintAndEnvelope-Package_AD", "http://laurentius.si/meps", "AD", 800, 12000, true);// 2kg -30kg
+  LegalZPP("PrintAndEnvelope-LegalZPP", "http://laurentius.si/meps", "ZPP", 1, 800, true),  // - max 2kg
+  LegalZPP_NP("PrintAndEnvelope-LegalZPP_NP", "http://laurentius.si/meps", "ZPN", 1, 800, true), // - max 2kg
+  LegalZUP("PrintAndEnvelope-LegalZUP", "http://laurentius.si/meps", "ZUP", 1, 800, true), // - max 2kg
+  C5("PrintAndEnvelope-C5", "http://laurentius.si/meps", "NAV", 1, 800, false), // - max 2kg
+  C5_R("PrintAndEnvelope-C5-R", "http://laurentius.si/meps", "NAR", 1, 800, true), // - max 2kg
+  C5_AD("PrintAndEnvelope-C5-AD", "http://laurentius.si/meps", "NAP", 1, 800, true), // - max 2kg
+  Package("PrintAndEnvelope-Package", "http://laurentius.si/meps", "PAK", 800, 12000, false), // 2kg  - 30kg
+  Package_R("PrintAndEnvelope-Package_R", "http://laurentius.si/meps", "PKR", 800, 12000, true),//2kg -  30kg
+  Package_AD("PrintAndEnvelope-Package_AD", "http://laurentius.si/meps", "PKP", 800, 12000, true);// 2kg -30kg
   
   
   

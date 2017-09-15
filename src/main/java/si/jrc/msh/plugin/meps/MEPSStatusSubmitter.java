@@ -16,24 +16,19 @@ package si.jrc.msh.plugin.meps;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -172,7 +167,9 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
       // - move sfile to precessed
       // - if error move to error message
 
-      Path sendingFile = null;
+      
+      Path sendingFile = moveFileToFolder(file.toPath(), sendingFolder);
+      /*Path sendingFile = null;
       try {
 
         sendingFile = sendingFolder.toPath().resolve(file.getName());
@@ -183,7 +180,7 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
         LOG.logError(msg, ex);
         throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
                 msg);
-      }
+      }*/
 
       MSHInMail mRef = null;
       List<Status> lstStatuses = new ArrayList<>();
@@ -241,6 +238,8 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
         String msg = "Error occured while generating report for data:  '" + file.
                 getName() + "'!";
         LOG.logError(msg, ex);
+        // move file to error folder
+        moveFileToFolder(sendingFile, errorFolder);
         throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
                 msg);
 
@@ -283,6 +282,7 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
         String msg = "Error occured while generating payload for data:  '" + file.
                 getName() + "'!";
         LOG.logError(msg, ex);
+        moveFileToFolder(sendingFile, errorFolder);
         throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
                 msg);
 
@@ -291,10 +291,12 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
       try {
         // submit mail
         mdao.serializeOutMail(mout, "", AppConstant.PLUGIN_TYPE, "");
+        moveFileToFolder(sendingFile, sentFolder);
       } catch (StorageException ex) {
         String msg = "Error occured while sending mail for data:  '" + file.
                 getName() + "'!";
         LOG.logError(msg, ex);
+        moveFileToFolder(sendingFile, errorFolder);
         throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
                 msg);
       }
@@ -304,6 +306,8 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
               mout.getMessageId());
       mailLst.stream().forEach((m) -> {
         try {
+          
+          
 
           mdao.setStatusToInMail(m, SEDInboxMailStatus.DELIVERED, statusMsg,
                   null, AppConstant.PLUGIN_TYPE);
@@ -322,6 +326,22 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
     sw.append(" in : " + (LOG.getTime() - l) + " ms\n");
     LOG.logEnd(l);
     return sw.toString();
+  }
+  
+  public Path moveFileToFolder(Path file, File folder) throws TaskException{
+   Path newFile = null;
+      try {
+
+        newFile = folder.toPath().resolve(file.getFileName());
+        Files.move(file, newFile);
+      } catch (IOException ex) {
+        String msg = "Error occured while moving file: '"+file.toString()+"' to  folder  '" + folder.
+                getName() + "'!";
+        LOG.logError(msg, ex);
+        throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
+                msg);
+      }
+      return newFile;
   }
 
   public Status createStatus(final String line) throws TaskException {
