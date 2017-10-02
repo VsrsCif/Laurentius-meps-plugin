@@ -101,6 +101,8 @@ public class MEPSTask implements TaskExecutionInterface {
   public static final String DATE_FORMAT_SVN = "%02d.%02d.%04d";
   public static final String DATETIME_FORMAT = "%04d%02d%02d_%02d02d";
 
+  public static final String DEF_METADATA_CHARSET = "UTF-8";
+
   @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
   SEDDaoInterface mDB;
 
@@ -163,6 +165,8 @@ public class MEPSTask implements TaskExecutionInterface {
                 msg);
       }
       charset = Charset.forName(chs);
+    } else {
+      charset = Charset.forName(DEF_METADATA_CHARSET);
     }
 
     int maxMailProc = 1500;
@@ -271,8 +275,10 @@ public class MEPSTask implements TaskExecutionInterface {
 
   public File exportMailForFilter(MSHInMail miFilter, StringWriter sw,
           String sedBox, int maxMailProc,
-          String exportFolderMask, String envelopeDataFilenameMask, Charset charset) throws TaskException {
+          String exportFolderMask, String envelopeDataFilenameMask,
+          Charset charset) throws TaskException {
     long l = LOG.logStart();
+
     List<MSHInMail> lst = mDB.
             getDataList(MSHInMail.class, -1, maxMailProc, "Id", "ASC",
                     miFilter);
@@ -342,10 +348,9 @@ public class MEPSTask implements TaskExecutionInterface {
       });
 
       // export all mail
-      
       Writer mailDataWriter = null;
-      try (FileOutputStream fos =  new FileOutputStream(envelopeDataFile)) {
-        mailDataWriter = new  OutputStreamWriter( fos,  charset);
+      try (FileOutputStream fos = new FileOutputStream(envelopeDataFile)) {
+        mailDataWriter = new OutputStreamWriter(fos, charset);
         for (MSHInMail m : lst) {
           exportData(m, mailDataWriter, exportFolder, miFilter.getService(),
                   iPackageNumber);
@@ -480,7 +485,8 @@ public class MEPSTask implements TaskExecutionInterface {
     }
 
     try {
-      String conntentFileName = "doc_" + mInMail.getMessageId().replace('@', '_') + ".pdf";
+      String conntentFileName = "doc_" + mInMail.getMessageId().
+              replace('@', '_') + ".pdf";
       EnvelopeData ed = (EnvelopeData) XMLUtils.deserialize(envData,
               EnvelopeData.class);
 
@@ -613,7 +619,7 @@ public class MEPSTask implements TaskExecutionInterface {
                     "Metadata encoding. If value is null, platform's default charset is setted",
                     false,
                     PropertyType.String.getType(), null, null,
-                    "utf-8"));
+                    DEF_METADATA_CHARSET));
 
     tt.getCronTaskPropertyDeves().add(
             createTTProperty(KEY_SENDER_SEDBOX, "Sender box", true,
