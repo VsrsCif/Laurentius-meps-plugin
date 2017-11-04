@@ -1,0 +1,34 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.sonar/cache
+
+env:
+  secure: "QSumTvMGgT7gm/ydWBbB4kkivLWTPyWZzsPxfF1fx2Ekn+I9836s4L8sp4lKLVMlCWMTP1BTIYMB8gIY7lkdWusYz8GnHuLwVgwo0MtiKsM4dx/INBYz3X7jFlQ5zzHzYdjsZGhw0J9Ez4ef7K60+ssUUxOZIA+nZM2d+vgSrMvhVLOUmGZ+UOlv1yr9ed6hvbdNT6Nk98zqBiiEb5oly+bt6RqWeYYf7lsFAnQX7haCBZWs+Hts4ewRZziUzP1zUMB2qMNNkpZPOYXwXBfd00vCBMGk3YEaqBD7YXH8gMmgPLxCoeoriQsXx53X6IG/gAZ5ZpFW6A+TpFiYFlQB8A0pf4EWeTgR4IJ+OpWT9GLM0Z4ObYKFGe2/ZJjWH/zknB2NAjuVNmtbRgwQFaTP9JXBIFiK9VF7gW7jehXrVSGvkeVJIuOpyB+Z6y8qmKiDPWBMmBCESNhIp5DuvSmS2etGaf+/Ptb07dxoawb/YoSmOie4wGW0+1czDI5iMQFmy+pAvmcNiCNLRnK5UdwUfqv5aB2DQnEIeAe4EE1Dt1eHs+fSROuiSfQ11CekmMRMMWTO9dZF5lSmFp57HzESDddg67Pj5hKAWHre7MoZGrH+Yo3cQUm/CB+Qjxm4wP4UVUiB8n+APw2vGf9jdob+nJVANPSjI7qINOFkTb2MmdY="
+
+  
+  
+addons:
+  sonarcloud:
+    organization: "vsrs-laurentius"
+    token:   
+        secure: "oVsMEjYR8Uv8GJ/eHVD0pLQX/c/V9gpJ131y4B41uRosmZHcHNQP3Lz9AdiTIhD5jt188hoAUvcyIV5ZysM3Bly8ndeLHt9dn5oBHshNIGjSt+NHftBim60tTtYCR6Yi38oqmYYaiTgqmFxBIw8AwCj2f1NVnIOSq7G5/lD9SpHOQYP4grQGHk/93GX0hHtSgXzmV+tGoVgTBhElKDIe4nyETPPR457sjv/3tszrn8hbOULOVkZRoNlatoByWebvlDlEfJf/eOzjQb+nhG0zs5m8NQ6LH8Djy63ZF9qCUMv5wkxas7r0WguLmG6Ate7WZTa+9Zbn2ste7YmQCypLrXf1941E/481NpHXRknFGwJjTK61jBVHiqb7e65m+Jp2MijREHl/iBx3aS94xeYjDGaBO5nhjeLx0UM+tgwkqVqCdi6QVgXs2sxcjM4GcTLzNnACuH+JJNWb6bEb6XmoHZnRoDGOFsYBBv/WjXPRdfdC3tgnTTzt3LP3sWUZE8SFpdNd2sH2dP5c3qiyk7/swLA8Fdi4pT2N3bcZMf9uqNvs2jOBubpKhcSy50QdsmDIC1fu2567QnM2iU7rYn/mcKkOn+U3K/RW+Uuw2/5iveSZ5aI6uBuVWRHgkVcIw0549er2HspE7ctElNYaAKbOlQ0ocyf6U/RE1B5SolVm3Yw="
+
+
+#
+jobs:
+  include:
+    - stage: build_and_analyse
+      script: 
+         - mvn clean install org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar           
+    - stage: build_docker_image
+      script:
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t laurentius-meps-plugin .
+      - docker tag laurentius-meps-plugin $DOCKER_USERNAME/laurentius-meps-plugin
+      - docker push $DOCKER_USERNAME/laurentius-meps-plugin

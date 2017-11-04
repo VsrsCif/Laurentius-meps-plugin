@@ -59,7 +59,7 @@
         <maven.war.plugin.version>2.6</maven.war.plugin.version>     
     </properties>
     
-    <repositories>
+    <repositories> 
         <repository>
             <id>laurentius-maven-repo</id>
             <name>laurentius-maven-repo</name>
