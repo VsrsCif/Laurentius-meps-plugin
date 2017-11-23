@@ -335,10 +335,12 @@ public class MEPSOutInterceptor implements SoapInterceptorInterface {
     }
 
     try {
-
+      
       PDFContentData pd = pdfUtils.concatenatePdfFiles(lstFiles);
       File f = storageUtils.storeOutFile(MEPSPayloadPart.CONCATENATED_CONTENT.
               getMimeType(), new File(pd.getTempFileName()));
+      // delete temp file
+      pd.deleteTempFile();
 
       mp = new MSHOutPart();
       mp.setIsReceived(Boolean.FALSE);

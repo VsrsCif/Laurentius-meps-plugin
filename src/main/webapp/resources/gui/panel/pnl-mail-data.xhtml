@@ -22,7 +22,6 @@
                                          style="width:150px"
 
                                          >
-                            <f:selectItem noSelectionOption="false"  />
                             <f:selectItems value="#{MEPSPluginData.userEBoxes}"
                                            var="ebx"
                                            itemLabel="#{ebx}@#{MEPSLookups.localDomain}"
@@ -38,7 +37,8 @@
                                          editable="true">
 
                             <f:selectItems value="#{MEPSPluginData.userEBoxes}" 
-                                           var="ebx" itemLabel="#{ebx}@#{MEPSLookups.localDomain}"
+                                           var="ebx" 
+                                           itemLabel="#{ebx}@#{MEPSLookups.localDomain}"
                                            itemValue="#{ebx}@#{MEPSLookups.localDomain}"
                                            />
                         </p:selectOneMenu>    

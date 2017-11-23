@@ -18,8 +18,6 @@ package si.jrc.msh.plugin.meps.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -29,15 +27,11 @@ import si.jrc.msh.plugin.meps.enums.MEPSPartPropertyType;
 import si.jrc.msh.plugin.meps.enums.MEPSPayloadPart;
 import si.laurentius.commons.SEDValues;
 import si.laurentius.commons.enums.MimeValue;
-import si.laurentius.commons.exception.FOPException;
-import si.laurentius.commons.exception.HashException;
-import si.laurentius.commons.exception.SEDSecurityException;
 import si.laurentius.commons.exception.StorageException;
 import si.laurentius.commons.utils.SEDLogger;
 import si.laurentius.commons.utils.StorageUtils;
 import si.laurentius.commons.utils.Utils;
 import si.laurentius.commons.utils.xml.XMLUtils;
-import si.laurentius.msh.mail.MSHMailType;
 import si.laurentius.msh.outbox.payload.MSHOutPart;
 import si.laurentius.msh.outbox.payload.OMPartProperty;
 import si.laurentius.plugin.interfaces.exception.TaskException;
@@ -137,5 +131,8 @@ public class MEPSUtils {
       op.getOMPartProperties().add(prp);
     }
   }
+  
+  
+  
 
 }

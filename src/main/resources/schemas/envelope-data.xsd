@@ -25,7 +25,9 @@ Copyright 2015, Supreme Court Republic of Slovenia
  See the Licence for the specific language governing permissions and  
  limitations under the Licence.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://meps.laurentius.si/envelope" targetNamespace="http://meps.laurentius.si/envelope" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://meps.laurentius.si/envelope" 
+           targetNamespace="http://meps.laurentius.si/envelope"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="EnvelopeData" type="ns1:EnvelopeData"/>
 	<xs:complexType name="PhysicalAddressType">
 		<xs:attribute name="name" type="ns1:non-empty-string" use="required">
@@ -93,7 +95,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
 		<xs:attribute name="contentDescription" use="required">
 			<xs:simpleType>
 				<xs:restriction base="ns1:non-empty-string">
-					<xs:maxLength value="150"/>
+					<xs:maxLength value="200"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>

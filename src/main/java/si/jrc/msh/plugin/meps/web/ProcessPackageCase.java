@@ -63,8 +63,18 @@ public class ProcessPackageCase extends ProcessAbstract {
                     getTestService()));
     setProgress(0);
   }
+  
+  
+  public void testInitData(){
+    // exists file with test data
+    // exists at least one payload
+  }
 
   public void executeStressTest() {
+    
+    testInitData();
+    
+    // test init data 
 
     String senderBox = getTestSenderEBox();
     String receiverBox = getTestReceiverEBox();

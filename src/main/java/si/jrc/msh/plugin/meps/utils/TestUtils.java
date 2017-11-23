@@ -118,7 +118,7 @@ public class TestUtils {
 
     om.setMSHOutPayload(new MSHOutPayload());
     
-    addEnvelopeData(indx, om, senderAddress, senderAddress, ms);
+    addEnvelopeData(indx, om, senderAddress, receiverAddress, ms);
 
     int i = 0;
     for (File f : fls) {
@@ -189,14 +189,14 @@ public class TestUtils {
     envelopeData.getSenderAddress().setTown("Ljubljana");
 
     envelopeData.setReceiverAddress(new PhysicalAddressType());
-    envelopeData.getReceiverAddress().setAddress(sa[2]);
+    envelopeData.getReceiverAddress().setAddress(ra[2]);
     envelopeData.getReceiverAddress().setCountry("Slovenija");
     envelopeData.getReceiverAddress().setCountryCode("SVN");
-    envelopeData.getReceiverAddress().setName(sa[0]);
-    envelopeData.getReceiverAddress().setName2(sa[1]);
-    envelopeData.getReceiverAddress().setPostalCode(sa[3]);
-    envelopeData.getReceiverAddress().setPostalName(sa[4]);
-    envelopeData.getReceiverAddress().setTown(sa[4]);
+    envelopeData.getReceiverAddress().setName(ra[0]);
+    envelopeData.getReceiverAddress().setName2(ra[1]);
+    envelopeData.getReceiverAddress().setPostalCode(ra[3]);
+    envelopeData.getReceiverAddress().setPostalName(ra[4]);
+    envelopeData.getReceiverAddress().setTown(ra[4]);
 
     byte buff[] = XMLUtils.serialize(envelopeData);
     File fStorage = mstrgUtils.storeOutFile(MimeValue.MIME_XML.getMimeType(), buff);
@@ -213,9 +213,22 @@ public class TestUtils {
 
   public static File[] getTestFiles() {
     if (mTstFiles == null) {
+      
 
       File f = new File(SEDSystemProperties.getPluginsFolder(), StringFormater.
               replaceProperties(BLOB_FOLDER));
+      
+      if (!f.exists()){
+        if (f.mkdirs()){
+          // copy folders
+        
+        } else {
+          LOG.formatedWarning("Error occured while creating folder %s", f.getAbsolutePath());
+        }        
+        // create test files
+      }
+      
+      
       mTstFiles = f.listFiles((File pathname) -> {
         return pathname.isFile()
                 && pathname.getName().toLowerCase().endsWith(".pdf");
@@ -223,6 +236,12 @@ public class TestUtils {
     }
     return mTstFiles;
   }
+  
+  //
+  public void createTestFiles(){
+  
+  }
+ 
 
   public static synchronized int nextRNumber() {
     int ir = R_NUMBER.getAndIncrement();

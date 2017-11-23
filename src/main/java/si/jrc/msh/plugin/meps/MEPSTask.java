@@ -157,8 +157,11 @@ public class MEPSTask implements TaskExecutionInterface {
 
     Charset charset = null;
     if (p.containsKey(KEY_METADATA_ENCODING)) {
+      
       String chs = p.getProperty(KEY_METADATA_ENCODING);
-      if (Charset.isSupported(chs)) {
+      chs = chs.isEmpty()?DEF_METADATA_CHARSET:chs;
+      
+      if (!Charset.isSupported(chs)) {
         String msg = "Charset:  '" + chs + "' is not supported!";
         LOG.logError(msg, null);
         throw new TaskException(TaskException.TaskExceptionCode.InitException,
