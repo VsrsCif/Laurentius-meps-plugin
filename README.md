@@ -1,4 +1,4 @@
-# Machine printing and eveloping plugin
+# Machine printing and enveloping plugin
 Project Laurentius-meps-plugin is [Laurentius](https://github.com/VsrsCif/Laurentius)  plugin 
 for using Machine printing and eveloping service. 
 
