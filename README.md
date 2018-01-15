@@ -21,7 +21,7 @@ MEPS Service type correspond to mail envelope type and postal delivery service.
 | PrintAndEnvelope-Package | Package  (2kg - 30kg) | |
 | PrintAndEnvelope-Package_R | Registred package  (2kg - 30kg) | |
 | PrintAndEnvelope-Package_AD| Registred package with AdviceOfDelivery  (2kg - 30kg) | |
-| PrintAndEnvelope-LegalZPP  | Legal service in civil procedures - personal (1g - 2kg) | [Printed ZPP envelope (personal)](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_osebno.pdf), [ZPP envelope (personal)](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_Osebna_printed.png) | 
+| PrintAndEnvelope-LegalZPP  | Legal service in civil procedures - personal (1g - 2kg) | [Printed ZPP envelope (personal)](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_Osebna_printed.png), [ZPP envelope (personal)](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_osebno.pdf) | 
 | PrintAndEnvelope-LegalZPP_NP | Legal service in civil procedures  (1g - 2kg)| [ Printed ZPP envelope ]( https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_Navadna_printed.png),  [ZPP envelope ]( https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZPP_navadno.pdf) |
 | PrintAndEnvelope-LegalZUP |  Legal service in administrative procedures (1g - 2kg)|   [ZUP envelope ](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/ZUP.pdf) |
 
