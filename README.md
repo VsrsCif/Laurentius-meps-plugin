@@ -15,8 +15,8 @@ MEPS Service type correspond to mail envelope type and postal delivery service.
 
 | Service type  | description | envelope exampe |
 | ------------- | ------------- | ------------- |
-| PrintAndEnvelope-C5      | Ordinal mail with C5 envelope (1g - 2kg)|   |
-| PrintAndEnvelope-C5-R    | Registred mail with: C5 envelope (1g - 2kg) |  |
+| PrintAndEnvelope-C5      | Ordinal mail with C5 envelope (1g - 2kg)|  [Envelope](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/Envelope-ordinar.png) |
+| PrintAndEnvelope-C5-R    | Registred mail with: C5 envelope (1g - 2kg) | [Envelope with UPN](https://github.com/VsrsCif/Laurentius-meps-plugin/blob/master/docs/Envelope-ordinar-UPN.png)  |
 | PrintAndEnvelope-C5-AD   | Registred  mail with AdviceOfDelivery  (1g - 2kg) | |
 | PrintAndEnvelope-Package | Package  (2kg - 30kg) | |
 | PrintAndEnvelope-Package_R | Registred package  (2kg - 30kg) | |
