@@ -21,8 +21,11 @@ import java.util.Objects;
  * @author Jože Rihtaršič
  */
 public enum MEPSService {
+  
   LegalZPP("PrintAndEnvelope-LegalZPP", "http://laurentius.si/meps", "ZPP", 1, 800, true),  // - max 2kg
   LegalZPP_NP("PrintAndEnvelope-LegalZPP_NP", "http://laurentius.si/meps", "ZPN", 1, 800, true), // - max 2kg
+  LegalZSR("PrintAndEnvelope-LegalZSR", "http://laurentius.si/meps", "ZSR", 1, 800, true),  // - max 2kg  - zsreg
+  LegalZFP("PrintAndEnvelope-LegalZFP¸", "http://laurentius.si/meps", "ZFP", 1, 800, true),  // - max 2kg - ZFPPIP 
   LegalZUP("PrintAndEnvelope-LegalZUP", "http://laurentius.si/meps", "ZUP", 1, 800, true), // - max 2kg
   C5("PrintAndEnvelope-C5", "http://laurentius.si/meps", "NAV", 1, 800, false), // - max 2kg
   C5_R("PrintAndEnvelope-C5-R", "http://laurentius.si/meps", "NAR", 1, 800, true), // - max 2kg

@@ -14,11 +14,16 @@
  */
 package si.jrc.msh.plugin.meps;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
@@ -27,6 +32,7 @@ import javax.ejb.TransactionManagementType;
 import javax.xml.bind.JAXBException;
 import org.apache.cxf.binding.soap.SoapFault;
 import org.apache.cxf.binding.soap.SoapMessage;
+import static si.jrc.msh.plugin.meps.AppConstant.BLOB_FOLDER;
 import si.jrc.msh.plugin.meps.enums.MEPSAction;
 import si.jrc.msh.plugin.meps.enums.MEPSPartPropertyType;
 import si.jrc.msh.plugin.meps.enums.MEPSPayloadPart;
@@ -35,6 +41,7 @@ import si.jrc.msh.plugin.meps.exception.MEPSFault;
 import si.jrc.msh.plugin.meps.exception.MEPSFaultCode;
 import si.jrc.msh.plugin.meps.pdf.PDFUtil;
 import si.laurentius.commons.SEDJNDI;
+import si.laurentius.commons.SEDSystemProperties;
 import si.laurentius.msh.inbox.mail.MSHInMail;
 import si.laurentius.commons.cxf.SoapUtils;
 import si.laurentius.commons.enums.MimeValue;
@@ -44,6 +51,7 @@ import si.laurentius.commons.exception.StorageException;
 import si.laurentius.commons.interfaces.SEDDaoInterface;
 import si.laurentius.commons.utils.SEDLogger;
 import si.laurentius.commons.utils.StorageUtils;
+import si.laurentius.commons.utils.StringFormater;
 import si.laurentius.commons.utils.Utils;
 import si.laurentius.commons.utils.xml.XMLUtils;
 import si.laurentius.meps.envelope.EnvelopeData;
@@ -103,7 +111,25 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
     if (!isBackChannel) {
       if (mInMail != null && MEPSAction.ADD_MAIL.getValue().equals(mInMail.
               getAction())) {
-        validateMail(mInMail);
+        MSHInPart iPDF =  validateMail(mInMail);
+        // copy to cahce
+        File f = StorageUtils.getFile(iPDF.getFilepath());
+        File fDir = new File(SEDSystemProperties.getPluginsFolder(), StringFormater.
+              replaceProperties(AppConstant.CACHE_FOLDER));
+        
+        File fCache = new File(fDir, iPDF.getFilepath());
+        try {      
+          File parent = fCache.getParentFile();
+          if (parent.exists() || parent.mkdirs()) {
+            Files.copy(f.toPath(), fCache.toPath(), StandardCopyOption.REPLACE_EXISTING);
+          } else {
+          LOG.formatedWarning("Error occured while creating cache parent folder: %s",parent.getAbsolutePath());
+          }
+          
+        } catch (IOException ex) {
+          LOG.formatedWarning("Error occured while creating cache file: %s. Error: %s",fCache.getAbsolutePath(), ex.getMessage());
+        }
+       
 
       }
 
@@ -218,7 +244,7 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
 
   }
 
-  public void validateMail(MSHInMail mail) {
+  public MSHInPart validateMail(MSHInMail mail) {
     // validate data
     // - has pdf payload
     // - has envelope data
@@ -386,6 +412,7 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
       }
 
     }
+    return concatenatedPart;
 
   }
 

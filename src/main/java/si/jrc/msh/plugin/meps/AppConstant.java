@@ -26,9 +26,11 @@ public class AppConstant {
   
   
   public static final String ROOT_FOLDER = "/meps/";
+  public static final String CACHE_FOLDER = ROOT_FOLDER +"cache/";
   public static final String BLOB_FOLDER = ROOT_FOLDER + "/test-pdf/";
   public static final String FILE_INIT_DATA = "meps-data.xml";
   public static final String FILE_PACKAGE_NUMBER = "last_package_number.txt";
+  public static final String FILE_OPEN_PACKAGE = "openpackages.properties";
   
   
 

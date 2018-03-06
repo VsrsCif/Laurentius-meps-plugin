@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,7 @@ import si.jrc.msh.plugin.meps.exception.MEPSException;
 import si.jrc.msh.plugin.meps.utils.MEPSUtils;
 import si.jrc.msh.plugin.meps.utils.PackageNumberGenerator;
 import si.laurentius.commons.SEDJNDI;
+import si.laurentius.commons.SEDSystemProperties;
 import si.laurentius.commons.email.EmailAttachmentData;
 import si.laurentius.commons.email.EmailData;
 import si.laurentius.commons.email.EmailUtils;
@@ -436,7 +438,7 @@ public class MEPSTask implements TaskExecutionInterface {
   private void exportData(MSHInMail mInMail, Writer metadata,
           File outFolder, String strFormatedTime, int packageId) throws TaskException {
     File envData = null;
-    File export = null;
+    MSHInPart export = null;
     int pageCount = 0;
     for (MSHInPart mp : mInMail.getMSHInPayload().getMSHInParts()) {
       // ignore header
@@ -468,7 +470,7 @@ public class MEPSTask implements TaskExecutionInterface {
                   "Mail must have only one MEPS attachmetns (concenated.pdf)!"
           );
         } else {
-          export = StorageUtils.getFile(mp.getFilepath());
+          export = mp;
         }
       }
     }
@@ -488,7 +490,7 @@ public class MEPSTask implements TaskExecutionInterface {
     }
 
     try {
-      String conntentFileName = "doc_" + mInMail.getMessageId().
+      String contentFileName = "doc_" + mInMail.getMessageId().
               replace('@', '_') + ".pdf";
       EnvelopeData ed = (EnvelopeData) XMLUtils.deserialize(envData,
               EnvelopeData.class);
@@ -498,9 +500,26 @@ public class MEPSTask implements TaskExecutionInterface {
       }
 
       String dataLine = generateDataLine(mInMail.getMessageId(), ed,
-              strFormatedTime, conntentFileName, pageCount, packageId);
+              strFormatedTime, contentFileName, pageCount, packageId);
       metadata.append(dataLine);
-      StorageUtils.copyFile(export, new File(outFolder, conntentFileName), true);
+      
+      //test if cache exists
+        File fDir = new File(SEDSystemProperties.getPluginsFolder(), StringFormater.
+              replaceProperties(AppConstant.CACHE_FOLDER));
+        
+        File fTargetFile = new File(outFolder, contentFileName);
+        
+        File fCache = new File(fDir, export.getFilepath());
+        if (fCache.exists()&& fCache.length() == export.getSize().longValue()) {
+          fCache.renameTo(fTargetFile);
+        } else {
+          StorageUtils.copyFile(StorageUtils.getFile(export.getFilepath()), fTargetFile, true);
+        }
+      
+      
+      
+      
+      
 
     } catch (JAXBException | IOException | StorageException ex) {
       LOG.logError("Error occured while exporting package:" + packageId, ex);

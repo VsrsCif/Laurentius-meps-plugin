@@ -50,6 +50,7 @@ import si.laurentius.msh.outbox.mail.MSHOutMail;
 import si.laurentius.commons.SEDJNDI;
 import si.laurentius.commons.cxf.SoapUtils;
 import si.laurentius.commons.enums.MimeValue;
+import si.laurentius.commons.enums.SEDMailPartSource;
 import si.laurentius.commons.enums.SEDOutboxMailStatus;
 import si.laurentius.commons.exception.StorageException;
 import si.laurentius.commons.interfaces.SEDDaoInterface;
@@ -167,10 +168,18 @@ public class MEPSOutInterceptor implements SoapInterceptorInterface {
     List<MSHOutPart> lstAddPart = new ArrayList<>();
 
     for (MSHOutPart mp : mail.getMSHOutPayload().getMSHOutParts()) {
+      // skip respose/request soap messages in resending
+      if (SEDMailPartSource.EBMS.getValue().
+              equals(mp.getSource()) ){
+        continue;
+      
+      }
 
-      if (Objects.equals(MimeValue.MIME_XML.getMimeType(), mp.getMimeType())
+      if ( Objects.equals(MimeValue.MIME_XML.getMimeType(), mp.getMimeType())
               || Objects.equals(MimeValue.MIME_XML1.getMimeType(), mp.
-                      getMimeType())) {
+                      getMimeType())
+              
+              ) {
         if (envDataPart != null) {
           throw new MEPSFault(MEPSFaultCode.Other, null,
                   "Mail must have only one XML  attachmetns (Envelope data)!",
