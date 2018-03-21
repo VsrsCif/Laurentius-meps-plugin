@@ -43,13 +43,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <war.final.name>plugin-meps</war.final.name>
         <laurentius.groupId>si.vsrs.cif.sed</laurentius.groupId>
-        <laurentius.version>2.0-SNAPSHOT</laurentius.version>
+        <laurentius.version>2.0</laurentius.version>
 		
         <!-- DEPENDENCIES -->
         <javax.javaee-api.version>7.0</javax.javaee-api.version>
         <log4j.version>1.2.17</log4j.version>
         <cxf-rt.version>3.1.4</cxf-rt.version>          
-        <org.primefaces.version>6.0</org.primefaces.version>
+        <org.primefaces.version>6.1</org.primefaces.version>
         <junit.version>4.12</junit.version>
         <itext.version>2.1.7</itext.version>
 

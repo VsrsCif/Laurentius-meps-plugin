@@ -167,7 +167,6 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
       // - move sfile to precessed
       // - if error move to error message
 
-      
       Path sendingFile = moveFileToFolder(file.toPath(), sendingFolder);
       /*Path sendingFile = null;
       try {
@@ -191,7 +190,7 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
           Status s = createStatus(line);
 
           if (s.getStatus().equalsIgnoreCase("IGNORE")) {
-               LOG.formatedError(
+            LOG.formatedError(
                     "Ignore Message with embsId %s!",
                     s.getRefToMessageId());
             continue;
@@ -213,17 +212,16 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
             // mo.set status je delivered
             // mail exists
             lstStatuses.add(s);
-            
+
           } else if (mRef.getService().equals(mo.getService())
                   && mRef.getSenderEBox().equals(mo.getSenderEBox())
                   && mRef.getReceiverEBox().equals(mo.getReceiverEBox())) {
-             mailLst.add(mo);
+            mailLst.add(mo);
 
             // mo.set status je delivered
             // mail exists
             lstStatuses.add(s);
           } else {
-           
 
             LOG.formatedError(
                     "In Message with embsId %s has invalid service, senderbox or receiverbox",
@@ -290,7 +288,7 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
 
       try {
         // submit mail
-        mdao.serializeOutMail(mout, "", AppConstant.PLUGIN_TYPE, "");
+        mdao.serializeOutMail(mout, "", AppConstant.PLUGIN_TYPE, null);
         moveFileToFolder(sendingFile, sentFolder);
       } catch (StorageException ex) {
         String msg = "Error occured while sending mail for data:  '" + file.
@@ -306,8 +304,6 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
               mout.getMessageId());
       mailLst.stream().forEach((m) -> {
         try {
-          
-          
 
           mdao.setStatusToInMail(m, SEDInboxMailStatus.DELIVERED, statusMsg,
                   null, AppConstant.PLUGIN_TYPE);
@@ -327,81 +323,74 @@ public class MEPSStatusSubmitter implements TaskExecutionInterface {
     LOG.logEnd(l);
     return sw.toString();
   }
-  
-  public Path moveFileToFolder(Path file, File folder) throws TaskException{
-   Path newFile = null;
-      try {
 
-        newFile = folder.toPath().resolve(file.getFileName());
-        Files.move(file, newFile);
-      } catch (IOException ex) {
-        String msg = "Error occured while moving file: '"+file.toString()+"' to  folder  '" + folder.
-                getName() + "'!";
-        LOG.logError(msg, ex);
-        throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
-                msg);
-      }
-      return newFile;
+  public Path moveFileToFolder(Path file, File folder) throws TaskException {
+    Path newFile = null;
+    try {
+
+      newFile = folder.toPath().resolve(file.getFileName());
+      Files.move(file, newFile);
+    } catch (IOException ex) {
+      String msg = "Error occured while moving file: '" + file.toString() + "' to  folder  '" + folder.
+              getName() + "'!";
+      LOG.logError(msg, ex);
+      throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
+              msg);
+    }
+    return newFile;
   }
 
   public Status createStatus(final String line) throws TaskException {
     Status st = new Status();
     String[] values = line.split("\\|");
+    int i = values.length - 8;
 
-    for (int i = 0, l = values.length; i < l; i++) {
-      String v = values[i];
-      if (!Utils.isEmptyString(v) && v.trim().equalsIgnoreCase("x")) {
-        // 15. - RefToMessageId
-        // 26. - SenderMessageId
-        // 27. - packageId
+    //for (int i = 0, l = values.length; i < l; i++) {
+    String v = values[i];
+    if (Utils.isEmptyString(v) || !v.trim().equalsIgnoreCase("x")) {
+      String msg = String.format(
+              "Line '%s' do not have 7 proceeding data after delimiter |x|mass[integer]|level|postalId|internalStatus|packageId|status|status date[dd.mm.yyyy]|",
+              line);
+      LOG.logError(msg, null);
+      throw new TaskException(
+              TaskException.TaskExceptionCode.ProcessException, msg);
 
-        // od x date;
-        //x + 0. x - "delimiter", od kje naprej so naši podatki
-        //x + 1. [MASA] 14 - masa [g]
-        //x + 2. 1(oz 9) - stopnja postopka preverjanja (za naše potrebe)
-        //x + 3. [ODDAJNI POPIS] x(oz 69) - oddajni popis, vrnjen pri oddaji statusov na pošto
-        //x + 4. OK - status uspešnosti preverjanja do trenutne stopnje (za naše potrebe)
-        //x + 5. [ID PAKETA] - polje za recieved status
-        //x + 6. [STATUS] - polje za processed/deleted/ignored status
-        //x + 7. [DATUM ] - datum [dd.mm.yyyy]
-        if (i + 7 >= l) {
-          String msg = String.format(
-                  "Line '%s' do not have 7 proceeding data after delimiter |x|mass[integer]|level|postalId|internalStatus|packageId|status|status date[dd.mm.yyyy]|",
-                  line);
-          LOG.logError(msg, null);
-          throw new TaskException(
-                  TaskException.TaskExceptionCode.ProcessException, msg);
-
-        }
-
-        st.setRefToMessageId(values[14]); // shift for 1 (index start with 0)
-        st.setSenderMessageId(
-                values[25] != null && values[25].startsWith("#") ? values[25].
-                substring(1) : values[25]); // skip #
-        st.setProcessId(values[26]);
-
-        st.setMass(new BigInteger(values[i + 1]));
-
-        st.setPostalId(values[i + 3]);
-        st.setStatus(values[i + 6]);
-        st.setContentPageCount(BigInteger.ONE);
-        try {
-          st.setDate(mSDF.parse(values[i + 7].trim()));
-        } catch (ParseException ex) {
-          String msg = String.format(
-                  "Error parsing date: %s for line %s,  error: %s",
-                  values[i + 7], line, ex.getMessage());
-          LOG.logError(msg, ex);
-          throw new TaskException(
-                  TaskException.TaskExceptionCode.ProcessException, msg);
-        }
-        return st;
-      }
     }
-    String msg = String.format("No delimiter |x| found for line %s", line);
-    LOG.logError(msg, null);
-    throw new TaskException(TaskException.TaskExceptionCode.ProcessException,
-            msg);
+
+    // 15. - RefToMessageId
+    // 26. - SenderMessageId
+    // 27. - packageId
+    // od x date;
+    //x + 0. x - "delimiter", od kje naprej so naši podatki
+    //x + 1. [MASA] 14 - masa [g]
+    //x + 2. 1(oz 9) - stopnja postopka preverjanja (za naše potrebe)
+    //x + 3. [ODDAJNI POPIS] x(oz 69) - oddajni popis, vrnjen pri oddaji statusov na pošto
+    //x + 4. OK - status uspešnosti preverjanja do trenutne stopnje (za naše potrebe)
+    //x + 5. [ID PAKETA] - polje za recieved status
+    //x + 6. [STATUS] - polje za processed/deleted/ignored status
+    //x + 7. [DATUM ] - datum [dd.mm.yyyy]
+    st.setRefToMessageId(values[14]); // shift for 1 (index start with 0)
+    st.setSenderMessageId(
+            values[25] != null && values[25].startsWith("#") ? values[25].
+            substring(1) : values[25]); // skip #
+    st.setProcessId(values[26]);
+
+    st.setMass(new BigInteger(values[i + 1]));
+
+    st.setPostalId(values[i + 3]);
+    st.setStatus(values[i + 6]);
+    st.setContentPageCount(BigInteger.ONE);
+    try {
+      st.setDate(mSDF.parse(values[i + 7].trim()));
+    } catch (ParseException ex) {
+      String msg = String.format(
+              "Error parsing date: %s for line %s,  error: %s",
+              values[i + 7], line, ex.getMessage());
+      LOG.logError(msg, ex);
+      throw new TaskException(
+              TaskException.TaskExceptionCode.ProcessException, msg);
+    }
+    return st;
 
   }
 

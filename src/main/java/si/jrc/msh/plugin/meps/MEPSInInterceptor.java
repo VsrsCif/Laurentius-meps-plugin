@@ -111,25 +111,30 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
     if (!isBackChannel) {
       if (mInMail != null && MEPSAction.ADD_MAIL.getValue().equals(mInMail.
               getAction())) {
-        MSHInPart iPDF =  validateMail(mInMail);
+        MSHInPart iPDF = validateMail(mInMail);
         // copy to cahce
         File f = StorageUtils.getFile(iPDF.getFilepath());
-        File fDir = new File(SEDSystemProperties.getPluginsFolder(), StringFormater.
-              replaceProperties(AppConstant.CACHE_FOLDER));
-        
+        File fDir = new File(SEDSystemProperties.getPluginsFolder(),
+                StringFormater.
+                        replaceProperties(AppConstant.CACHE_FOLDER));
+
         File fCache = new File(fDir, iPDF.getFilepath());
-        try {      
+        try {
           File parent = fCache.getParentFile();
           if (parent.exists() || parent.mkdirs()) {
-            Files.copy(f.toPath(), fCache.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(f.toPath(), fCache.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING);
           } else {
-          LOG.formatedWarning("Error occured while creating cache parent folder: %s",parent.getAbsolutePath());
+            LOG.formatedWarning(
+                    "Error occured while creating cache parent folder: %s",
+                    parent.getAbsolutePath());
           }
-          
+
         } catch (IOException ex) {
-          LOG.formatedWarning("Error occured while creating cache file: %s. Error: %s",fCache.getAbsolutePath(), ex.getMessage());
+          LOG.formatedWarning(
+                  "Error occured while creating cache file: %s. Error: %s",
+                  fCache.getAbsolutePath(), ex.getMessage());
         }
-       
 
       }
 
@@ -162,17 +167,16 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
                   msg,
                   SoapFault.FAULT_CODE_SERVER);
         }
-        statusData = ip;      
+        statusData = ip;
       }
 
     }
 
-   
-
     MailStatusReport msr = null;
     try {
       msr = (MailStatusReport) XMLUtils.deserialize(
-              StorageUtils.getFile(statusData.getFilepath()), MailStatusReport.class);
+              StorageUtils.getFile(statusData.getFilepath()),
+              MailStatusReport.class);
 
       // set statuses to sent mail
     } catch (JAXBException ex) {
@@ -225,6 +229,10 @@ public class MEPSInInterceptor implements SoapInterceptorInterface {
         break;
       case "ERROR":
         status = SEDOutboxMailStatus.ERROR;
+        desc = s.getErrDesc();
+        break;
+      case "IGNORED":
+        status = SEDOutboxMailStatus.DELETED;
         desc = s.getErrDesc();
         break;
       default:

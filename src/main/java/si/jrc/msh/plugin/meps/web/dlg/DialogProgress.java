@@ -1,7 +1,9 @@
 package si.jrc.msh.plugin.meps.web.dlg;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+
+import java.io.Serializable;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import org.primefaces.context.RequestContext;
 
 import si.laurentius.commons.utils.SEDLogger;
@@ -12,8 +14,8 @@ import si.laurentius.commons.utils.SEDLogger;
  * @author Jože Rihtaršič
  */
 @SessionScoped
-@ManagedBean(name = "dialogProgress")
-public class DialogProgress {
+@Named("dialogProgress")
+public class DialogProgress implements Serializable{
 
   private static final SEDLogger LOG = new SEDLogger(DialogProgress.class);
   

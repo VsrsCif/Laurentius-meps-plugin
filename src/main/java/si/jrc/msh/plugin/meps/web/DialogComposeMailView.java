@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.xml.bind.JAXBException;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -43,7 +43,7 @@ import si.laurentius.plugin.meps.PartyType;
  * @author sluzba
  */
 @SessionScoped
-@ManagedBean(name = "dialogComposeMailView")
+@Named("dialogComposeMailView")
 public class DialogComposeMailView extends AbstractJSFView {
 
   private static final SEDLogger LOG = new SEDLogger(DialogComposeMailView.class);
@@ -51,10 +51,10 @@ public class DialogComposeMailView extends AbstractJSFView {
   @EJB(mappedName = SEDJNDI.JNDI_SEDDAO)
   SEDDaoInterface mDB;
 
-  @ManagedProperty(value = "#{MEPSLookups}")
+  @Inject
   private MEPSLookups pluginLookups;
 
-  @ManagedProperty(value = "#{MEPSPluginData}")
+  @Inject
   private MEPSPluginData pluginData;
 
   MSHOutMail newOutMail;
@@ -232,7 +232,7 @@ public class DialogComposeMailView extends AbstractJSFView {
         newOutMail.setSubject("Print and envelope: " + getEnvelopeData().
                 getSenderMailData().getCaseNumber());
 
-        String pmodeId = Utils.getPModeIdFromOutMail(newOutMail);
+     
 
         StorageUtils su = new StorageUtils();
 
@@ -261,7 +261,7 @@ public class DialogComposeMailView extends AbstractJSFView {
         newOutMail.setSubmittedDate(Calendar.getInstance().getTime());
         mDB.serializeOutMail(newOutMail, pluginData.getUser().getUserId(),
                 "MEPS",
-                pmodeId);
+                null);
         addCallbackParam(AbstractJSFView.CB_PARA_SAVED, true);
       } catch (JAXBException | StorageException ex) {
         addCallbackParam(AbstractJSFView.CB_PARA_SAVED, true);

@@ -120,7 +120,7 @@ public class MEPSTestAbstract {
           rcBox,
           service,
           action);
-    mDB.serializeOutMail(mom, userName, AppConstant.PLUGIN_TYPE, "");
+    mDB.serializeOutMail(mom, userName, AppConstant.PLUGIN_TYPE, null);
 
     
   }

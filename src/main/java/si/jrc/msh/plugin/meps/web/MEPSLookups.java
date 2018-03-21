@@ -14,12 +14,14 @@
  */
 package si.jrc.msh.plugin.meps.web;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import si.jrc.msh.plugin.meps.ejb.MEPSDataInterface;
 import si.jrc.msh.plugin.meps.enums.MEPSService;
 import si.laurentius.commons.SEDSystemProperties;
@@ -33,8 +35,8 @@ import si.laurentius.plugin.meps.PhysicalAddressType;
  * @author Jože Rihtaršič
  */
 @SessionScoped
-@ManagedBean(name = "MEPSLookups")
-public class MEPSLookups {
+@Named("MEPSLookups")
+public class MEPSLookups implements Serializable{
 
   private static final SEDLogger LOG = new SEDLogger(MEPSLookups.class);
 

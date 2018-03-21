@@ -6,21 +6,21 @@
 package si.jrc.msh.plugin.meps.web;
 
 import java.io.Serializable;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.primefaces.context.RequestContext;
 import si.jrc.msh.plugin.meps.web.dlg.DialogProgress;
 import si.laurentius.commons.utils.SEDLogger;
 
 @SessionScoped
-@ManagedBean(name = "mepsTestCase")
+@Named("mepsTestCase")
 public class MEPSTestCase extends MEPSTestAbstract implements Serializable {
 
   private static final SEDLogger LOG = new SEDLogger(MEPSTestCase.class);
   private final ProcessPackageCase tesPackage = new ProcessPackageCase(this);
   
-  @ManagedProperty(value = "#{MEPSLookups}")
+  @Inject
   private MEPSLookups pluginLookups;
 
   public MEPSLookups getPluginLookups() {

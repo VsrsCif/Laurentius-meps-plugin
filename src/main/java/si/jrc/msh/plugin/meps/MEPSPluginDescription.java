@@ -51,7 +51,7 @@ public class MEPSPluginDescription extends AbstractPluginDescription {
       DefaultInitData did = (DefaultInitData) XMLUtils.deserialize(MEPSPluginDescription.class.
               getResourceAsStream("/init/def-init-data.xml"),
               DefaultInitData.class);
-      
+     
       did.getPModeData().getServices().clear();
       did.getPModeData().getServices().addAll(mPMDUtils.createServices());
       did.getPModeData().getPModes().clear();

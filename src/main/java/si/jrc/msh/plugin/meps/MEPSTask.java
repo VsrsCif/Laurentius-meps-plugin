@@ -511,8 +511,10 @@ public class MEPSTask implements TaskExecutionInterface {
         
         File fCache = new File(fDir, export.getFilepath());
         if (fCache.exists()&& fCache.length() == export.getSize().longValue()) {
+          LOG.formatedlog("move from cache: %s to %s !", fCache.getAbsolutePath(), fTargetFile.getAbsolutePath());
           fCache.renameTo(fTargetFile);
         } else {
+          LOG.formatedlog("Copy from storage cache %s, cache size %d, export size %s!", fCache.exists()?"exists":"NOT exists",  fCache.length(),  export.getSize().longValue());
           StorageUtils.copyFile(StorageUtils.getFile(export.getFilepath()), fTargetFile, true);
         }
       
