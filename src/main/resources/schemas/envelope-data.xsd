@@ -113,7 +113,7 @@ Copyright 2015, Supreme Court Republic of Slovenia
 		<xs:attribute name="contentDescription" use="required">
 			<xs:simpleType>
 				<xs:restriction base="ns1:non-empty-string">
-					<xs:maxLength value="150"/>
+					<xs:maxLength value="255"/>
 				</xs:restriction>
 			</xs:simpleType>
 		</xs:attribute>
